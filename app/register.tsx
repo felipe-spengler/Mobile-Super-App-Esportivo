@@ -1,0 +1,278 @@
+import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Alert, Image } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../src/context/AuthContext';
+import api from '../src/services/api';
+import { FontAwesome5 } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import '../global.css';
+
+export default function RegisterScreen() {
+    const router = useRouter();
+    const { signIn } = useAuth();
+
+    const [step, setStep] = useState<'scan' | 'form'>('scan');
+    const [loadingOCR, setLoadingOCR] = useState(false);
+
+    // Form Data
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [phone, setPhone] = useState('');
+    const [cpf, setCpf] = useState('');
+    const [birthDate, setBirthDate] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // OCR Data
+    const [docImage, setDocImage] = useState<string | null>(null);
+
+    async function pickImage() {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 0.8,
+        });
+
+        if (!result.canceled) {
+            analyzeDocument(result.assets[0].uri);
+        }
+    }
+
+    async function takePhoto() {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (permission.granted === false) {
+            Alert.alert("Permissão necessária", "Precisamos de acesso à câmera para escanear o documento.");
+            return;
+        }
+
+        const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            quality: 0.8,
+        });
+
+        if (!result.canceled) {
+            analyzeDocument(result.assets[0].uri);
+        }
+    }
+
+    async function analyzeDocument(uri: string) {
+        setDocImage(uri);
+        setLoadingOCR(true);
+
+        const formData = new FormData();
+        // @ts-ignore - React Native FormData expects uri, name, type
+        formData.append('document', {
+            uri,
+            name: 'doc.jpg',
+            type: 'image/jpeg'
+        });
+
+        try {
+            const response = await api.post('/ocr/analyze', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            const data = response.data.data;
+            if (data) {
+                if (data.name) setName(data.name);
+                if (data.cpf) setCpf(data.cpf);
+                if (data.birth_date) setBirthDate(data.birth_date);
+
+                Alert.alert('Sucesso', 'Dados extraídos com sucesso! Verifique e complete o cadastro.');
+                setStep('form');
+            } else {
+                Alert.alert('Atenção', 'Não conseguimos ler todos os dados. Por favor, preencha manualmente.');
+                setStep('form');
+            }
+
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Erro no OCR', 'Falha ao analisar documento. Preencha manualmente.');
+            setStep('form');
+        } finally {
+            setLoadingOCR(false);
+        }
+    }
+
+    async function handleRegister() {
+        if (!name || !email || !password || !confirmPassword || !cpf || !birthDate) {
+            Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            Alert.alert('Erro', 'As senhas não coincidem.');
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            await api.post('/register', {
+                name,
+                email,
+                password,
+                password_confirmation: confirmPassword,
+                phone,
+                cpf,
+                birth_date: birthDate
+            });
+
+            await signIn(email, password);
+            router.replace('/(tabs)');
+
+        } catch (error: any) {
+            console.error(error);
+            const msg = error.response?.data?.message || 'Não foi possível criar a conta.';
+            Alert.alert('Erro no Cadastro', msg);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    if (step === 'scan') {
+        return (
+            <View className="flex-1 bg-gray-50 dark:bg-gray-900 px-6 justify-center items-center">
+                <FontAwesome5 name="id-card" size={60} color="#3B82F6" className="mb-6" />
+                <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Validação de Identidade</Text>
+                <Text className="text-gray-500 dark:text-gray-400 text-center mb-8">
+                    Para garantir a segurança e categorias corretas nos campeonatos, precisamos escanear seu RG ou CNH.
+                </Text>
+
+                {loadingOCR ? (
+                    <View className="items-center">
+                        <ActivityIndicator size="large" color="#3B82F6" />
+                        <Text className="text-gray-600 dark:text-gray-300 mt-4">Analisando documento com IA...</Text>
+                    </View>
+                ) : (
+                    <View className="w-full gap-4">
+                        <TouchableOpacity className="bg-blue-600 p-4 rounded-xl flex-row justify-center items-center" onPress={takePhoto}>
+                            <FontAwesome5 name="camera" size={20} color="white" className="mr-3" />
+                            <Text className="text-white font-bold text-lg">Tirar Foto</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity className="bg-gray-200 dark:bg-gray-700 p-4 rounded-xl flex-row justify-center items-center" onPress={pickImage}>
+                            <FontAwesome5 name="image" size={20} color="#666" className="mr-3" />
+                            <Text className="text-gray-800 dark:text-white font-bold text-lg">Escolher da Galeria</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity className="mt-4 p-2" onPress={() => setStep('form')}>
+                            <Text className="text-gray-400 text-center text-sm">Pular validação (sujeito a aprovação manual)</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            </View>
+        );
+    }
+
+    return (
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-gray-50 dark:bg-gray-900 px-6 py-10">
+            <View className="items-center mb-8">
+                <Text className="text-gray-900 dark:text-white text-2xl font-bold">Finalizar Cadastro</Text>
+                <Text className="text-gray-500 dark:text-gray-400 text-sm">Confirme seus dados</Text>
+            </View>
+
+            <View className="space-y-4">
+                <View>
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Nome Completo</Text>
+                    <TextInput
+                        className="bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 p-4 rounded-xl border border-gray-200 dark:border-gray-700"
+                        value={name}
+                        onChangeText={setName}
+                        editable={!docImage} // Lock if came from image
+                    />
+                </View>
+
+                <View className="mt-2">
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">CPF (Somente Números)</Text>
+                    <TextInput
+                        className="bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 p-4 rounded-xl border border-gray-200 dark:border-gray-700"
+                        value={cpf}
+                        onChangeText={setCpf}
+                        editable={false} // Always lock if possible, or allow edit if step skipped? 
+                    // If step skipped, docImage is null, so !docImage is true -> editable.
+                    // If came from OCR, editable is false.
+                    />
+                    {!docImage && <Text className="text-xs text-yellow-600 mt-1">Preenchimento manual sujeito a auditoria.</Text>}
+                </View>
+
+                <View className="mt-2">
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Data de Nascimento (AAAA-MM-DD)</Text>
+                    <TextInput
+                        className="bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 p-4 rounded-xl border border-gray-200 dark:border-gray-700"
+                        placeholder="YYYY-MM-DD"
+                        placeholderTextColor="#999"
+                        value={birthDate}
+                        onChangeText={setBirthDate}
+                        editable={!docImage}
+                    />
+                </View>
+
+                <View className="mt-2">
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">E-mail</Text>
+                    <TextInput
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        placeholder="seu@email.com"
+                        placeholderTextColor="#9CA3AF"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                </View>
+
+                <View className="mt-2">
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Telefone / WhatsApp</Text>
+                    <TextInput
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        placeholder="(00) 00000-0000"
+                        placeholderTextColor="#9CA3AF"
+                        keyboardType="phone-pad"
+                        value={phone}
+                        onChangeText={setPhone}
+                    />
+                </View>
+
+                <View className="mt-2">
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Senha</Text>
+                    <TextInput
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        placeholder="Mínimo 6 caracteres"
+                        placeholderTextColor="#9CA3AF"
+                        secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                </View>
+
+                <View className="mt-2">
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Confirmar Senha</Text>
+                    <TextInput
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        placeholder="Repita a senha"
+                        placeholderTextColor="#9CA3AF"
+                        secureTextEntry
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                    />
+                </View>
+
+                <TouchableOpacity
+                    className={`bg-blue-600 p-4 rounded-xl items-center mt-6 ${isSubmitting ? 'opacity-50' : ''}`}
+                    onPress={handleRegister}
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? (
+                        <ActivityIndicator color="#FFF" />
+                    ) : (
+                        <Text className="text-white font-bold text-lg">Cadastrar</Text>
+                    )}
+                </TouchableOpacity>
+
+                <TouchableOpacity className="mt-4 items-center mb-6" onPress={() => router.back()}>
+                    <Text className="text-gray-600 dark:text-gray-400">Já tem uma conta? <Text className="text-blue-600 dark:text-blue-400 font-bold">Faça Login</Text></Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    );
+}
