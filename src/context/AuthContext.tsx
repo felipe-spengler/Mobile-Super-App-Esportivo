@@ -9,6 +9,7 @@ interface User {
     name: string;
     email: string;
     is_admin?: boolean;
+    club_id?: number | null;
     phone?: string;
     cpf?: string;
     birth_date?: string;

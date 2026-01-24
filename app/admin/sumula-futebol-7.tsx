@@ -8,25 +8,60 @@ export default function SumulaDigitalScreen() {
     const router = useRouter();
     const { gameId } = useLocalSearchParams();
 
-    // Game State
-    const [scoreHome, setScoreHome] = useState(0);
-    const [scoreAway, setScoreAway] = useState(0);
-    const [period, setPeriod] = useState(1); // 1, 2
-    const [time, setTime] = useState(0); // seconds
-    const [isRunning, setIsRunning] = useState(false);
-    const [events, setEvents] = useState<any[]>([]);
+    // API Config
+    const API_URL = 'http://localhost:8000/api';
 
+    // Game State
+    const [loading, setLoading] = useState(true);
+    const [matchData, setMatchData] = useState<any>(null);
+    const [time, setTime] = useState(0);
+    const [isRunning, setIsRunning] = useState(false);
+
+    useEffect(() => {
+        if (gameId) fetchMatchDetails();
+    }, [gameId]);
+
+    // Timer Logic 
     useEffect(() => {
         let interval: any = null;
         if (isRunning) {
-            interval = setInterval(() => {
-                setTime(t => t + 1);
-            }, 1000);
-        } else if (!isRunning && time !== 0) {
+            interval = setInterval(() => setTime(t => t + 1), 1000);
+        } else {
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [isRunning, time]);
+    }, [isRunning]);
+
+    const fetchMatchDetails = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${API_URL}/admin/matches/${gameId}/full-details`);
+            const data = await response.json();
+            if (data.match) {
+                // Parse history
+                const history = (data.details?.events || []).map((e: any) => ({
+                    id: e.id,
+                    type: e.type,
+                    team: parseInt(e.team_id) === data.match.home_team_id ? 'home' : 'away',
+                    time: e.minute,
+                    period: e.period
+                }));
+
+                setMatchData({
+                    ...data.match,
+                    history: history,
+                    // Converte score para sets ou gols dependendo do backend, mas aqui esperamos gols
+                    scoreHome: parseInt(data.match.home_score),
+                    scoreAway: parseInt(data.match.away_score)
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            Alert.alert('Erro', 'Falha ao carregar jogo.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -34,19 +69,39 @@ export default function SumulaDigitalScreen() {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const addEvent = (type: 'goal' | 'yellow' | 'red', team: 'home' | 'away') => {
-        const newEvent = {
-            id: Date.now(),
-            type,
-            team,
-            time: formatTime(time),
-            period
-        };
-        setEvents([newEvent, ...events]);
+    const addEvent = async (type: 'goal' | 'yellow' | 'red', team: 'home' | 'away') => {
+        if (!matchData) return;
 
-        if (type === 'goal') {
-            if (team === 'home') setScoreHome(s => s + 1);
-            else setScoreAway(s => s + 1);
+        const teamId = team === 'home' ? matchData.home_team_id : matchData.away_team_id;
+        const eventType = type === 'goal' ? 'goal' : (type === 'yellow' ? 'yellow_card' : 'red_card');
+
+        try {
+            // Optimistic Update
+            const newEvent = {
+                id: Date.now(),
+                type: eventType,
+                team,
+                time: formatTime(time),
+                period: 1 // TODO: Logic for periods
+            };
+
+            // Call API
+            await fetch(`${API_URL}/admin/matches/${gameId}/events`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: eventType,
+                    team_id: teamId,
+                    minute: formatTime(time),
+                    period: '1º Tempo'
+                })
+            });
+
+            // Reload Data
+            fetchMatchDetails();
+
+        } catch (e) {
+            Alert.alert('Erro', 'Falha ao registrar evento.');
         }
     };
 
@@ -62,6 +117,17 @@ export default function SumulaDigitalScreen() {
             }
         ]);
     };
+
+    if (loading || !matchData) {
+        return <View className="flex-1 bg-gray-900 justify-center items-center"><Text className="text-white">Carregando...</Text></View>;
+    }
+
+    const scoreHome = matchData.scoreHome || 0;
+    const scoreAway = matchData.scoreAway || 0;
+    const period = 1;
+    const events = matchData.history || [];
+    const homeName = matchData.home_team?.name || 'Casa';
+    const awayName = matchData.away_team?.name || 'Visitante';
 
     return (
         <View className="flex-1 bg-gray-900">
@@ -80,7 +146,7 @@ export default function SumulaDigitalScreen() {
                 {/* Score Board */}
                 <View className="flex-row items-center justify-between px-2">
                     <View className="items-center w-1/3">
-                        <Text className="text-white font-bold text-lg mb-2 text-center" numberOfLines={1}>Tigers FC</Text>
+                        <Text className="text-white font-bold text-lg mb-2 text-center" numberOfLines={1}>{homeName}</Text>
                         <Text className="text-6xl font-black text-white">{scoreHome}</Text>
                     </View>
 
@@ -99,7 +165,7 @@ export default function SumulaDigitalScreen() {
                     </View>
 
                     <View className="items-center w-1/3">
-                        <Text className="text-white font-bold text-lg mb-2 text-center" numberOfLines={1}>Lions Utd</Text>
+                        <Text className="text-white font-bold text-lg mb-2 text-center" numberOfLines={1}>{awayName}</Text>
                         <Text className="text-6xl font-black text-white">{scoreAway}</Text>
                     </View>
                 </View>

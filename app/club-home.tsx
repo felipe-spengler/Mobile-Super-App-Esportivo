@@ -93,7 +93,7 @@ export default function ClubHomeScreen() {
                             })}
                         >
                             <View className={`w-12 h-12 ${sport.color} rounded-full items-center justify-center mb-2`}>
-                                <FontAwesome5 name={sport.icon as any} size={20} color="white" />
+                                <FontAwesome5 name={sport.icon as any} size={20} color="white" solid />
                             </View>
                             <Text className="text-gray-700 font-medium text-xs">{sport.name}</Text>
                         </TouchableOpacity>

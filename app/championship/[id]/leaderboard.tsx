@@ -6,7 +6,7 @@ import api from '../../../src/services/api';
 import '../../../global.css';
 
 export default function LeaderboardScreen() {
-    const { id } = useLocalSearchParams();
+    const { id, category_id } = useLocalSearchParams();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [table, setTable] = useState<any[]>([]);
@@ -17,7 +17,7 @@ export default function LeaderboardScreen() {
             try {
                 const [champRes, tableRes] = await Promise.all([
                     api.get(`/championships/${id}`),
-                    api.get(`/championships/${id}/leaderboard`)
+                    api.get(`/championships/${id}/leaderboard`, { params: { category_id } })
                 ]);
 
                 setSportSlug(champRes.data.sport?.slug || 'futebol');
@@ -59,13 +59,13 @@ export default function LeaderboardScreen() {
             <View className="bg-blue-100 dark:bg-blue-900/40 flex-row p-3 border-b border-blue-200 dark:border-blue-800">
                 <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200">#</Text>
                 <Text className="flex-1 font-bold text-blue-800 dark:text-blue-200 ml-2">Time</Text>
-                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200" title="Pontos">P</Text>
-                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200" title="Jogos">J</Text>
-                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200" title="Vitórias">V</Text>
-                {!isVolei && <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200" title="Empates">E</Text>}
-                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200" title="Derrotas">D</Text>
-                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200 text-xs" title={isVolei ? "Sets Pró" : "Gols Pró"}>{isVolei ? 'SP' : 'GP'}</Text>
-                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200 text-xs" title={isVolei ? "Sets Contra" : "Gols Contra"}>{isVolei ? 'SC' : 'GC'}</Text>
+                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200">P</Text>
+                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200">J</Text>
+                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200">V</Text>
+                {!isVolei && <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200">E</Text>}
+                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200">D</Text>
+                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200 text-xs">{isVolei ? 'SP' : 'GP'}</Text>
+                <Text className="w-8 text-center font-bold text-blue-800 dark:text-blue-200 text-xs">{isVolei ? 'SC' : 'GC'}</Text>
             </View>
 
             {loading ? <ActivityIndicator size="large" className="mt-10" color="#3B82F6" /> : (

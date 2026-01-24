@@ -6,6 +6,7 @@ import { Pressable } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'nativewind';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { useAuth } from '../../src/context/AuthContext';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -18,6 +19,12 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { user, selectedClub } = useAuth();
+
+  // Show admin tab if:
+  // - User is admin AND
+  // - (User is super admin (club_id = null) OR user's club matches selected club)
+  const showAdminTab = user?.is_admin && (user.club_id === null || user.club_id === selectedClub?.id);
 
   return (
     <Tabs
@@ -63,6 +70,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
+      {showAdminTab && (
+        <Tabs.Screen
+          name="admin"
+          options={{
+            title: 'Admin',
+            tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
+          }}
+        />
+      )}
     </Tabs>
   );
 }

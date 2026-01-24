@@ -16,6 +16,7 @@ export default function ProfileScreen() {
     ...(user.is_admin ? [{ label: 'Área do Gestor', icon: 'user-tie', route: '/admin/home', color: 'text-blue-600 dark:text-blue-400' }] : []),
     { label: 'Editar Perfil', icon: 'user-edit', route: '/profile/edit' },
     { label: 'Minhas Inscrições', icon: 'clipboard-list', route: '/inscriptions' },
+    { label: 'Gerar Artes (Confirmado)', icon: 'camera', route: '/profile/generate-art' },
     { label: 'Configurações', icon: 'cog', route: '/settings' },
     { label: 'Sair', icon: 'sign-out-alt', route: 'logout', color: 'text-red-500' },
   ] : [

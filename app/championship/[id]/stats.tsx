@@ -6,7 +6,7 @@ import api from '../../../src/services/api';
 import '../../../global.css';
 
 export default function ChampionshipStatsScreen() {
-    const { id, type, title } = useLocalSearchParams();
+    const { id, type, title, category_id } = useLocalSearchParams();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<any[]>([]);
@@ -14,11 +14,11 @@ export default function ChampionshipStatsScreen() {
     const displayTitle = Array.isArray(title) ? title[0] : title || 'Estatísticas';
 
     useEffect(() => {
-        api.get(`/championships/${id}/stats`, { params: { type } })
+        api.get(`/championships/${id}/stats`, { params: { type, category_id } })
             .then(res => setStats(res.data))
             .catch(console.error)
             .finally(() => setLoading(false));
-    }, [id, type]);
+    }, [id, type, category_id]);
 
     const renderItem = ({ item, index }: any) => (
         <View className="flex-row p-4 items-center bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
