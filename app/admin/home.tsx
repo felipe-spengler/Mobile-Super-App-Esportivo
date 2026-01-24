@@ -50,14 +50,27 @@ export default function AdminHomeScreen() {
                         <View className="w-12 h-12 bg-purple-100 rounded-full items-center justify-center mb-2">
                             <MaterialIcons name="qr-code-scanner" size={24} color="#9333ea" />
                         </View>
-                        <Text className="font-bold text-gray-700">Validar Atleta</Text>
+                        <Text className="font-bold text-gray-700 text-xs">Validar</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity className="flex-1 bg-white p-4 rounded-xl items-center shadow-sm border border-gray-100">
+                    <TouchableOpacity
+                        onPress={() => router.push('/admin/reports')}
+                        className="flex-1 bg-white p-4 rounded-xl items-center shadow-sm border border-gray-100"
+                    >
                         <View className="w-12 h-12 bg-orange-100 rounded-full items-center justify-center mb-2">
                             <FontAwesome5 name="file-contract" size={20} color="#ea580c" />
                         </View>
-                        <Text className="font-bold text-gray-700">Relatório</Text>
+                        <Text className="font-bold text-gray-700 text-xs">Relatórios</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => router.push('/admin/notifications')}
+                        className="flex-1 bg-white p-4 rounded-xl items-center shadow-sm border border-gray-100"
+                    >
+                        <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mb-2">
+                            <MaterialIcons name="notifications-active" size={24} color="#2563eb" />
+                        </View>
+                        <Text className="font-bold text-gray-700 text-xs">Alertas</Text>
                     </TouchableOpacity>
                 </View>
 
