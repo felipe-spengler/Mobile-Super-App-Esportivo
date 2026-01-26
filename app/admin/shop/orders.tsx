@@ -44,7 +44,10 @@ export default function AdminOrdersScreen() {
     };
 
     const renderItem = ({ item }: { item: any }) => (
-        <TouchableOpacity className="bg-white dark:bg-gray-800 p-4 rounded-xl mb-3 shadow-sm border border-gray-100 dark:border-gray-700">
+        <TouchableOpacity
+            className="bg-white dark:bg-gray-800 p-4 rounded-xl mb-3 shadow-sm border border-gray-100 dark:border-gray-700"
+            onPress={() => router.push(`/admin/shop/order-detail/${item.id}`)}
+        >
             <View className="flex-row justify-between items-start mb-2">
                 <Text className="text-gray-800 dark:text-gray-100 font-bold text-base">Pedido #{item.id}</Text>
                 <View className={`px-2 py-1 rounded ${getStatusColor(item.status).split(' ')[0]}`}>

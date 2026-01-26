@@ -21,8 +21,16 @@ export default function AdminHomeScreen() {
                         <Text className="text-blue-200 text-sm font-uppercase tracking-wider">Painel do Árbitro</Text>
                         <Text className="text-white text-2xl font-bold">Olá, Juiz Carlos</Text>
                     </View>
-                    <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center border-2 border-white/30">
-                        <FontAwesome5 name="whistle" size={20} color="white" />
+                    <View className="flex-row gap-2">
+                        <TouchableOpacity
+                            onPress={() => router.push('/admin/club-config')}
+                            className="w-12 h-12 bg-white/20 rounded-full items-center justify-center border-2 border-white/30"
+                        >
+                            <FontAwesome5 name="cog" size={20} color="white" />
+                        </TouchableOpacity>
+                        <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center border-2 border-white/30">
+                            <FontAwesome5 name="whistle" size={20} color="white" />
+                        </View>
                     </View>
                 </View>
 

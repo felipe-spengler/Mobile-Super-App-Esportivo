@@ -29,7 +29,10 @@ export default function AdminProductsScreen() {
     }
 
     const renderItem = ({ item }: { item: any }) => (
-        <View className="bg-white dark:bg-gray-800 p-4 rounded-xl mb-3 shadow-sm border border-gray-100 dark:border-gray-700 flex-row items-center">
+        <TouchableOpacity
+            onPress={() => router.push({ pathname: '/admin/shop/manage-product', params: { id: item.id } })}
+            className="bg-white dark:bg-gray-800 p-4 rounded-xl mb-3 shadow-sm border border-gray-100 dark:border-gray-700 flex-row items-center"
+        >
             <Image
                 source={{ uri: item.image_url || 'https://via.placeholder.com/150' }}
                 className="w-16 h-16 rounded-lg bg-gray-200"
@@ -50,7 +53,7 @@ export default function AdminProductsScreen() {
                     </Text>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -63,6 +66,13 @@ export default function AdminProductsScreen() {
                     </TouchableOpacity>
                     <Text className="text-xl font-bold text-gray-800 dark:text-white">Gerenciar Loja</Text>
                 </View>
+                <TouchableOpacity
+                    className="bg-green-600 px-4 py-2 rounded-lg flex-row items-center"
+                    onPress={() => router.push('/admin/shop/manage-product')}
+                >
+                    <FontAwesome5 name="plus" size={12} color="white" />
+                    <Text className="text-white font-bold text-xs ml-2">NOVO</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Tabs (Produtos / Pedidos) - Simulação via botões por enquanto */}
