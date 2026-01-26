@@ -72,6 +72,16 @@ export default function AdminHomeScreen() {
                         </View>
                         <Text className="font-bold text-gray-700 text-xs">Alertas</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => router.push('/admin/shop/products')}
+                        className="flex-1 bg-white p-4 rounded-xl items-center shadow-sm border border-gray-100"
+                    >
+                        <View className="w-12 h-12 bg-green-100 rounded-full items-center justify-center mb-2">
+                            <FontAwesome5 name="store" size={20} color="#16a34a" />
+                        </View>
+                        <Text className="font-bold text-gray-700 text-xs">Loja</Text>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Today's Games */}
@@ -80,7 +90,7 @@ export default function AdminHomeScreen() {
                 {games.map(game => (
                     <TouchableOpacity
                         key={game.id}
-                        onPress={() => router.push({ pathname: '/admin/sumula', params: { gameId: game.id } })}
+                        onPress={() => router.push({ pathname: '/admin/sumula-selector/[id]', params: { id: game.id } })}
                         className="bg-white p-4 rounded-xl mb-3 shadow-md border-l-4 border-blue-600 flex-row items-center"
                     >
                         <View className="pr-4 border-r border-gray-100">
