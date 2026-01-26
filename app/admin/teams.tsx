@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import api from '../../src/services/api';
+import { api } from '../../src/services/api';
 import '../../global.css';
 
 export default function AdminTeamsScreen() {
@@ -114,7 +114,7 @@ export default function AdminTeamsScreen() {
                 <View className="flex-row justify-between items-center pt-3 border-t border-gray-100 dark:border-gray-700">
                     <TouchableOpacity
                         className="flex-row items-center bg-blue-50 dark:bg-blue-900 px-3 py-2 rounded"
-                        onPress={() => router.push(`/admin/team-detail?id=${item.id}`)}
+                        onPress={() => router.push(`/admin/team-detail/${item.id}`)}
                     >
                         <FontAwesome5 name="users" size={12} color="#0d6efd" />
                         <Text className="text-blue-600 dark:text-blue-400 text-xs font-bold ml-2">Jogadores</Text>

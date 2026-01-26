@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } fro
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import '../../global.css';
-import api from '../../src/services/api';
+import { api } from '../../src/services/api';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function EditProfile() {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import api from '../services/api';
+import { api } from '../src/services/api';
 
 interface ImageUploadProps {
     onUploadComplete: (url: string, path: string) => void;

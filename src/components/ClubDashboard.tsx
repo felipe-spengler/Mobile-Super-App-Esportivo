@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'rea
 import { useRouter } from 'expo-router';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import api from '../services/api';
+import { api } from '../services/api';
 import '../../global.css';
 
 export default function ClubDashboard({ clubSlug, onBack }: { clubSlug: string, onBack: () => void }) {

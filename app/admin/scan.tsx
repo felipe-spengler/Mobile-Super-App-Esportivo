@@ -10,7 +10,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import api from '../../services/api';
+import { api } from '../../src/services/api';
 
 export default function ScanQRCode() {
     const [permission, requestPermission] = useCameraPermissions();

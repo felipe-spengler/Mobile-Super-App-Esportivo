@@ -4,8 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-// Config API
-const API_URL = 'http://localhost:8000/api';
+import { api } from '../../src/services/api';
 
 export default function BasqueteSumulaScreen() {
     const router = useRouter();
@@ -44,8 +43,8 @@ export default function BasqueteSumulaScreen() {
     const fetchMatchDetails = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_URL}/admin/matches/${id}/full-details`);
-            const data = await response.json();
+            const response = await api.get(`/admin/matches/${id}/full-details`);
+            const data = response.data;
 
             if (data.match) {
                 const details = data.details || {};
@@ -85,16 +84,12 @@ export default function BasqueteSumulaScreen() {
         if (!matchData) return;
 
         try {
-            await fetch(`${API_URL}/admin/matches/${id}/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: `${points}pt`, // 2pt, 3pt
-                    team_id: teamId,
-                    points: points,
-                    minute: formatTime(quarterTime),
-                    period: matchData.current_quarter + 'º Quarto'
-                })
+            await api.post(`/admin/matches/${id}/events`, {
+                type: `${points}pt`, // 2pt, 3pt
+                team_id: teamId,
+                points: points,
+                minute: formatTime(quarterTime),
+                period: matchData.current_quarter + 'º Quarto'
             });
             fetchMatchDetails();
         } catch (e) {
@@ -111,16 +106,12 @@ export default function BasqueteSumulaScreen() {
         if (!selectedFoulTeam) return;
 
         try {
-            await fetch(`${API_URL}/admin/matches/${id}/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: 'foul',
-                    description: type,
-                    team_id: selectedFoulTeam,
-                    minute: formatTime(quarterTime),
-                    period: matchData.current_quarter + 'º Quarto'
-                })
+            await api.post(`/admin/matches/${id}/events`, {
+                type: 'foul',
+                description: type,
+                team_id: selectedFoulTeam,
+                minute: formatTime(quarterTime),
+                period: matchData.current_quarter + 'º Quarto'
             });
             fetchMatchDetails(); // Recomputar faltas se tivesse logica no backend
             setModalFoulVisible(false);

@@ -4,8 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-// API Configuration
-const API_URL = 'http://localhost:8000/api';
+import { api } from '../../src/services/api';
 
 export default function HandebolSumulaScreen() {
     const router = useRouter();
@@ -40,8 +39,8 @@ export default function HandebolSumulaScreen() {
     const fetchMatchDetails = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_URL}/admin/matches/${id}/full-details`);
-            const data = await response.json();
+            const response = await api.get(`/admin/matches/${id}/full-details`);
+            const data = response.data;
 
             if (data.match) {
                 const details = data.details || {};
@@ -73,15 +72,11 @@ export default function HandebolSumulaScreen() {
         if (!matchData) return;
 
         try {
-            await fetch(`${API_URL}/admin/matches/${id}/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: type, // goal, suspension_2min, yellow_card
-                    team_id: teamId,
-                    minute: formatTime(timeInSeconds),
-                    period: '1º Tempo' // TODO: Period logic
-                })
+            await api.post(`/admin/matches/${id}/events`, {
+                type: type, // goal, suspension_2min, yellow_card
+                team_id: teamId,
+                minute: formatTime(timeInSeconds),
+                period: '1º Tempo' // TODO: Period logic
             });
             fetchMatchDetails();
         } catch (e) {

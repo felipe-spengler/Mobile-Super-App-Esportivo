@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import api from '../../../services/api';
+import { api } from '../../../src/services/api';
 import ImageUpload from '../../../components/ImageUpload';
 
 interface Player {

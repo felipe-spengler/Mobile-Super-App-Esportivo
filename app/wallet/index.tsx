@@ -1,6 +1,6 @@
 import { View, Text, ActivityIndicator, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import api from '../../src/services/api';
+import { api } from '../../src/services/api';
 import '../../global.css';
 
 export default function WalletScreen() {

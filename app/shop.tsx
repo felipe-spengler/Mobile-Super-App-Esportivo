@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import api from '../src/services/api';
+import { api } from '../src/services/api';
 import '../global.css';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useAuth } from '../src/context/AuthContext';

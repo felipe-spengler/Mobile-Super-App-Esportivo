@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
 import { useAuth } from '../../src/context/AuthContext';
-import api from '../../src/services/api';
+import { api } from '../../src/services/api';
 import '../../global.css';
 
 export default function GenerateArtScreen() {

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Modal, Alert } from 'react-na
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { api } from '../../../src/services/api';
+import { api } from '../../src/services/api';
 
 
 export default function VoleiSumulaScreen() {

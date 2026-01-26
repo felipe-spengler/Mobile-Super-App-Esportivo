@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Modal, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import api from '../../src/services/api';
+import { api } from '../../src/services/api';
 import PlayerPicker from '../../components/PlayerPicker';
 import '../../global.css';
 

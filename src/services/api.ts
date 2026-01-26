@@ -5,12 +5,18 @@ import { Platform } from 'react-native';
 // Android Emulator usa 10.0.2.2
 // iOS Simulator usa localhost
 // URL de Produção/Teste (VPS)
-const BASE_URL = 'http://w00wks0scwg08k08owg4sw4g.145.223.30.211.sslip.io/api';
+// URL de Produção/Teste (VPS)
+const BASE_URL = 'https://esportivo.techinteligente.site/api';
 
-// Configuração Local Anterior (comentada para referência)
-// const BASE_URL = Platform.OS === 'android'
-//     ? 'http://10.0.2.2:8000/api'
-//     : 'http://localhost:8000/api';
+// Configuração Inteligente de URL (Comentada para forçar produção)
+/*
+const BASE_URL = Platform.select({
+    web: 'http://localhost:8000/api', // Web usa localhost
+    android: 'http://10.0.2.2:8000/api', // Emulador Android
+    ios: 'http://localhost:8000/api', // Simulador iOS
+    default: 'http://192.168.1.10:8000/api', // IP da sua máquina
+});
+*/
 
 const api = axios.create({
     baseURL: BASE_URL,

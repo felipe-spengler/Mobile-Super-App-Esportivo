@@ -4,8 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-// Config API
-const API_URL = 'http://localhost:8000/api';
+import { api } from '../../src/services/api';
 
 export default function LutasSumulaScreen() {
     const router = useRouter();
@@ -44,8 +43,8 @@ export default function LutasSumulaScreen() {
     const fetchMatchDetails = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_URL}/admin/matches/${id}/full-details`);
-            const data = await response.json();
+            const response = await api.get(`/admin/matches/${id}/full-details`);
+            const data = response.data;
 
             if (data.match) {
                 // Calcular pontos acumulados do histórico
@@ -81,15 +80,11 @@ export default function LutasSumulaScreen() {
         if (type === 'point') apiType = `${value}pt`; // ex: 2pt, 3pt
 
         try {
-            await fetch(`${API_URL}/admin/matches/${id}/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: apiType,
-                    team_id: teamId,
-                    points: value, // Para somar no placar geral se necessario
-                    minute: formatTime(timeInSeconds)
-                })
+            await api.post(`/admin/matches/${id}/events`, {
+                type: apiType,
+                team_id: teamId,
+                points: value, // Para somar no placar geral se necessario
+                minute: formatTime(timeInSeconds)
             });
             fetchMatchDetails();
         } catch (e) {

@@ -4,12 +4,11 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import '../../global.css';
 
+import { api } from '../../src/services/api';
+
 export default function SumulaDigitalScreen() {
     const router = useRouter();
     const { gameId } = useLocalSearchParams();
-
-    // API Config
-    const API_URL = 'http://localhost:8000/api';
 
     // Game State
     const [loading, setLoading] = useState(true);
@@ -35,8 +34,8 @@ export default function SumulaDigitalScreen() {
     const fetchMatchDetails = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_URL}/admin/matches/${gameId}/full-details`);
-            const data = await response.json();
+            const response = await api.get(`/admin/matches/${gameId}/full-details`);
+            const data = response.data;
             if (data.match) {
                 // Parse history
                 const history = (data.details?.events || []).map((e: any) => ({
@@ -86,15 +85,11 @@ export default function SumulaDigitalScreen() {
             };
 
             // Call API
-            await fetch(`${API_URL}/admin/matches/${gameId}/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: eventType,
-                    team_id: teamId,
-                    minute: formatTime(time),
-                    period: '1º Tempo'
-                })
+            await api.post(`/admin/matches/${gameId}/events`, {
+                type: eventType,
+                team_id: teamId,
+                minute: formatTime(time),
+                period: '1º Tempo'
             });
 
             // Reload Data

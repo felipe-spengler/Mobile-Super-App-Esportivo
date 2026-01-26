@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, FlatList }
 import { useRouter } from 'expo-router';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import api from '../../src/services/api';
+import { api } from '../../src/services/api';
 import '../../global.css';
 import { useAuth } from '../../src/context/AuthContext';
 import ClubDashboard from '../../src/components/ClubDashboard';
