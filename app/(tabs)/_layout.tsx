@@ -70,12 +70,26 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
-      {showAdminTab && (
+      <Tabs.Screen
+        name="carteirinha"
+        options={{
+          href: null,
+        }}
+      />
+
+      {showAdminTab ? (
         <Tabs.Screen
           name="admin"
           options={{
-            title: 'Admin',
-            tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
+            title: 'Administração',
+            tabBarIcon: ({ color }) => <TabBarIcon name="lock" color={color} />,
+          }}
+        />
+      ) : (
+        <Tabs.Screen
+          name="admin"
+          options={{
+            href: null,
           }}
         />
       )}
