@@ -4,9 +4,13 @@ import { Platform } from 'react-native';
 // Use seu IP da máquina se estiver testando em dispositivo físico
 // Android Emulator usa 10.0.2.2
 // iOS Simulator usa localhost
-const BASE_URL = Platform.OS === 'android'
-    ? 'http://10.0.2.2:8000/api'
-    : 'http://localhost:8000/api';
+// URL de Produção/Teste (VPS)
+const BASE_URL = 'http://w00wks0scwg08k08owg4sw4g.145.223.30.211.sslip.io/api';
+
+// Configuração Local Anterior (comentada para referência)
+// const BASE_URL = Platform.OS === 'android'
+//     ? 'http://10.0.2.2:8000/api'
+//     : 'http://localhost:8000/api';
 
 const api = axios.create({
     baseURL: BASE_URL,
