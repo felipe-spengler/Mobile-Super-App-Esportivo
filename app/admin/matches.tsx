@@ -212,11 +212,56 @@ export default function AdminMatchesScreen() {
                     <ScrollView className="bg-white dark:bg-gray-800 rounded-t-3xl p-6 pt-8 max-h-[80%]">
                         <Text className="text-xl font-bold text-gray-800 dark:text-white mb-4">Nova Partida</Text>
 
+                        {/* Championship Selector */}
                         <Text className="text-gray-600 dark:text-gray-400 text-sm mb-2">Campeonato</Text>
-                        <View className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mb-3">
+                        <TouchableOpacity
+                            className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mb-3"
+                            onPress={() => {
+                                Alert.alert('Selecionar Campeonato', '', championships.map(c => ({
+                                    text: c.name,
+                                    onPress: () => setNewMatch({ ...newMatch, championship_id: c.id.toString() })
+                                })), { cancelable: true });
+                            }}
+                        >
                             <Text className="text-gray-800 dark:text-white">
-                                {championships.find(c => c.id.toString() === newMatch.championship_id)?.name || 'Selecione'}
+                                {championships.find(c => c.id.toString() === newMatch.championship_id)?.name || 'Selecione o Campeonato'}
                             </Text>
+                        </TouchableOpacity>
+
+                        {/* Teams Selector */}
+                        <View className="flex-row gap-3">
+                            <View className="flex-1">
+                                <Text className="text-gray-600 dark:text-gray-400 text-xs mb-1">Mandante</Text>
+                                <TouchableOpacity
+                                    className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mb-3"
+                                    onPress={() => {
+                                        Alert.alert('Time Mandante', '', teams.map(t => ({
+                                            text: t.name,
+                                            onPress: () => setNewMatch({ ...newMatch, home_team_id: t.id.toString() })
+                                        })), { cancelable: true });
+                                    }}
+                                >
+                                    <Text className="text-gray-800 dark:text-white text-xs" numberOfLines={1}>
+                                        {teams.find(t => t.id.toString() === newMatch.home_team_id)?.name || 'Selecione'}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-gray-600 dark:text-gray-400 text-xs mb-1">Visitante</Text>
+                                <TouchableOpacity
+                                    className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mb-3"
+                                    onPress={() => {
+                                        Alert.alert('Time Visitante', '', teams.map(t => ({
+                                            text: t.name,
+                                            onPress: () => setNewMatch({ ...newMatch, away_team_id: t.id.toString() })
+                                        })), { cancelable: true });
+                                    }}
+                                >
+                                    <Text className="text-gray-800 dark:text-white text-xs" numberOfLines={1}>
+                                        {teams.find(t => t.id.toString() === newMatch.away_team_id)?.name || 'Selecione'}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
 
                         <TextInput
