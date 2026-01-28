@@ -11,7 +11,7 @@ export default function RegisterScreen() {
     const router = useRouter();
     const { signIn } = useAuth();
 
-    const [step, setStep] = useState<'scan' | 'form'>('scan');
+    const [step, setStep] = useState<'scan' | 'photo' | 'form'>('scan');
     const [loadingOCR, setLoadingOCR] = useState(false);
 
     // Form Data
@@ -24,35 +24,46 @@ export default function RegisterScreen() {
     const [birthDate, setBirthDate] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // OCR Data
+    // Images
     const [docImage, setDocImage] = useState<string | null>(null);
+    const [profileImage, setProfileImage] = useState<string | null>(null);
 
-    async function pickImage() {
+    async function pickImage(type: 'doc' | 'profile') {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             quality: 0.8,
+            aspect: type === 'profile' ? [1, 1] : undefined,
         });
 
         if (!result.canceled) {
-            analyzeDocument(result.assets[0].uri);
+            if (type === 'doc') {
+                analyzeDocument(result.assets[0].uri);
+            } else {
+                setProfileImage(result.assets[0].uri);
+            }
         }
     }
 
-    async function takePhoto() {
+    async function takePhoto(type: 'doc' | 'profile') {
         const permission = await ImagePicker.requestCameraPermissionsAsync();
         if (permission.granted === false) {
-            Alert.alert("Permissão necessária", "Precisamos de acesso à câmera para escanear o documento.");
+            Alert.alert("Permissão necessária", "Precisamos de acesso à câmera.");
             return;
         }
 
         const result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
             quality: 0.8,
+            aspect: type === 'profile' ? [1, 1] : undefined,
         });
 
         if (!result.canceled) {
-            analyzeDocument(result.assets[0].uri);
+            if (type === 'doc') {
+                analyzeDocument(result.assets[0].uri);
+            } else {
+                setProfileImage(result.assets[0].uri);
+            }
         }
     }
 
@@ -61,7 +72,7 @@ export default function RegisterScreen() {
         setLoadingOCR(true);
 
         const formData = new FormData();
-        // @ts-ignore - React Native FormData expects uri, name, type
+        // @ts-ignore
         formData.append('document', {
             uri,
             name: 'doc.jpg',
@@ -78,18 +89,16 @@ export default function RegisterScreen() {
                 if (data.name) setName(data.name);
                 if (data.cpf) setCpf(data.cpf);
                 if (data.birth_date) setBirthDate(data.birth_date);
-
-                Alert.alert('Sucesso', 'Dados extraídos com sucesso! Verifique e complete o cadastro.');
-                setStep('form');
+                Alert.alert('Sucesso', 'Dados extraídos com sucesso! Agora escolha sua foto de perfil.');
             } else {
-                Alert.alert('Atenção', 'Não conseguimos ler todos os dados. Por favor, preencha manualmente.');
-                setStep('form');
+                Alert.alert('Atenção', 'Não conseguimos ler todos os dados. Prossiga para a validação manual.');
             }
+            setStep('photo');
 
         } catch (error) {
             console.log(error);
             Alert.alert('Erro no OCR', 'Falha ao analisar documento. Preencha manualmente.');
-            setStep('form');
+            setStep('photo');
         } finally {
             setLoadingOCR(false);
         }
@@ -108,14 +117,35 @@ export default function RegisterScreen() {
 
         setIsSubmitting(true);
         try {
-            await api.post('/register', {
-                name,
-                email,
-                password,
-                password_confirmation: confirmPassword,
-                phone,
-                cpf,
-                birth_date: birthDate
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('password_confirmation', confirmPassword);
+            formData.append('phone', phone);
+            formData.append('cpf', cpf);
+            formData.append('birth_date', birthDate);
+
+            if (docImage) {
+                // @ts-ignore
+                formData.append('document', {
+                    uri: docImage,
+                    name: 'document.jpg',
+                    type: 'image/jpeg'
+                });
+            }
+
+            if (profileImage) {
+                // @ts-ignore
+                formData.append('photo', {
+                    uri: profileImage,
+                    name: 'profile.jpg',
+                    type: 'image/jpeg'
+                });
+            }
+
+            await api.post('/register', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
             await signIn(email, password);
@@ -134,7 +164,7 @@ export default function RegisterScreen() {
         return (
             <View className="flex-1 bg-gray-50 dark:bg-gray-900 px-6 justify-center items-center">
                 <FontAwesome5 name="id-card" size={60} color="#3B82F6" className="mb-6" />
-                <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Validação de Identidade</Text>
+                <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Passo 1: Validação</Text>
                 <Text className="text-gray-500 dark:text-gray-400 text-center mb-8">
                     Para garantir a segurança e categorias corretas nos campeonatos, precisamos escanear seu RG ou CNH.
                 </Text>
@@ -146,18 +176,18 @@ export default function RegisterScreen() {
                     </View>
                 ) : (
                     <View className="w-full gap-4">
-                        <TouchableOpacity className="bg-blue-600 p-4 rounded-xl flex-row justify-center items-center" onPress={takePhoto}>
+                        <TouchableOpacity className="bg-blue-600 p-4 rounded-xl flex-row justify-center items-center" onPress={() => takePhoto('doc')}>
                             <FontAwesome5 name="camera" size={20} color="white" className="mr-3" />
-                            <Text className="text-white font-bold text-lg">Tirar Foto</Text>
+                            <Text className="text-white font-bold text-lg">Tirar Foto do Documento</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity className="bg-gray-200 dark:bg-gray-700 p-4 rounded-xl flex-row justify-center items-center" onPress={pickImage}>
+                        <TouchableOpacity className="bg-gray-200 dark:bg-gray-700 p-4 rounded-xl flex-row justify-center items-center" onPress={() => pickImage('doc')}>
                             <FontAwesome5 name="image" size={20} color="#666" className="mr-3" />
-                            <Text className="text-gray-800 dark:text-white font-bold text-lg">Escolher da Galeria</Text>
+                            <Text className="text-gray-800 dark:text-white font-bold text-lg">Escolher Documento da Galeria</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity className="mt-4 p-2" onPress={() => setStep('form')}>
-                            <Text className="text-gray-400 text-center text-sm">Pular validação (sujeito a aprovação manual)</Text>
+                        <TouchableOpacity className="mt-4 p-2" onPress={() => setStep('photo')}>
+                            <Text className="text-gray-400 text-center text-sm">Pular validação</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -165,11 +195,48 @@ export default function RegisterScreen() {
         );
     }
 
+    if (step === 'photo') {
+        return (
+            <View className="flex-1 bg-gray-50 dark:bg-gray-900 px-6 justify-center items-center">
+                <View className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-800 mb-6 overflow-hidden items-center justify-center border-4 border-white dark:border-gray-700 shadow-xl">
+                    {profileImage ? (
+                        <Image source={{ uri: profileImage }} className="w-full h-full" />
+                    ) : (
+                        <FontAwesome5 name="user" size={50} color="#9CA3AF" />
+                    )}
+                </View>
+
+                <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Passo 2: Sua Foto</Text>
+                <Text className="text-gray-500 dark:text-gray-400 text-center mb-8">
+                    Escolha uma foto de perfil. Ela será usada em suas estatísticas, crachás e certificados.
+                </Text>
+
+                <View className="w-full gap-4">
+                    <TouchableOpacity className="bg-blue-600 p-4 rounded-xl flex-row justify-center items-center" onPress={() => takePhoto('profile')}>
+                        <FontAwesome5 name="camera" size={20} color="white" className="mr-3" />
+                        <Text className="text-white font-bold text-lg">Tirar Selfie</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity className="bg-gray-200 dark:bg-gray-700 p-4 rounded-xl flex-row justify-center items-center" onPress={() => pickImage('profile')}>
+                        <FontAwesome5 name="image" size={20} color="#666" className="mr-3" />
+                        <Text className="text-gray-800 dark:text-white font-bold text-lg">Escolher da Galeria</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity className={`mt-4 p-4 rounded-xl border border-blue-600 ${!profileImage ? 'opacity-50' : 'bg-blue-50'}`}
+                        onPress={() => setStep('form')}
+                    >
+                        <Text className="text-blue-600 font-bold text-center text-lg">{profileImage ? 'Continuar' : 'Pular foto por enquanto'}</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-gray-50 dark:bg-gray-900 px-6 py-10">
             <View className="items-center mb-8">
-                <Text className="text-gray-900 dark:text-white text-2xl font-bold">Finalizar Cadastro</Text>
-                <Text className="text-gray-500 dark:text-gray-400 text-sm">Confirme seus dados</Text>
+                <Text className="text-gray-900 dark:text-white text-2xl font-bold">Passo 3: Finalizar</Text>
+                <Text className="text-gray-500 dark:text-gray-400 text-sm">Confirme seus dados pessoais</Text>
             </View>
 
             <View className="space-y-4">
@@ -179,7 +246,7 @@ export default function RegisterScreen() {
                         className="bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 p-4 rounded-xl border border-gray-200 dark:border-gray-700"
                         value={name}
                         onChangeText={setName}
-                        editable={!docImage} // Lock if came from image
+                        editable={!docImage}
                     />
                 </View>
 
@@ -189,9 +256,7 @@ export default function RegisterScreen() {
                         className="bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 p-4 rounded-xl border border-gray-200 dark:border-gray-700"
                         value={cpf}
                         onChangeText={setCpf}
-                        editable={false} // Always lock if possible, or allow edit if step skipped? 
-                    // If step skipped, docImage is null, so !docImage is true -> editable.
-                    // If came from OCR, editable is false.
+                        editable={false}
                     />
                     {!docImage && <Text className="text-xs text-yellow-600 mt-1">Preenchimento manual sujeito a auditoria.</Text>}
                 </View>
