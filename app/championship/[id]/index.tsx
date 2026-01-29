@@ -124,7 +124,23 @@ export default function ChampionshipMenuScreen() {
 
     // Select menu based on sport slug
     const sportSlug = champ?.sport?.slug || 'default';
-    const gridItems = MENUS[sportSlug] || MENUS['default'];
+
+    // Normalização Inteligente de Slug
+    const normalizeSlug = (s: string) => {
+        s = s.toLowerCase();
+        if (s.includes('fute') || s.includes('fut') || s.includes('society') || s.includes('soccer')) return 'futebol';
+        if (s.includes('volei') || s.includes('volleyball')) return 'volei';
+        if (s.includes('hand')) return 'handebol';
+        if (s.includes('basket') || s.includes('basquete')) return 'basquete';
+        if (s.includes('corrida') || s.includes('run') || s.includes('atletismo') || s.includes('maratona') || s.includes('ciclismo')) return 'corrida';
+        if (s.includes('tenis') || s.includes('padel') || s.includes('racket')) return 'tenis';
+        if (s.includes('luta') || s.includes('jiu') || s.includes('boxe') || s.includes('mma') || s.includes('judô')) return 'lutas';
+        if (s.includes('swim') || s.includes('nata')) return 'natacao';
+        return s;
+    };
+
+    const resolvedSlug = normalizeSlug(sportSlug);
+    const gridItems = MENUS[resolvedSlug] || MENUS[sportSlug] || MENUS['default'];
 
     return (
         <View className="flex-1 bg-gray-50 dark:bg-gray-900">
