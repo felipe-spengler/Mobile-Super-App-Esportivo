@@ -80,7 +80,13 @@ export default function AdminChampionshipsScreen() {
                             {item.name}
                         </Text>
                         <Text className="text-gray-500 dark:text-gray-400 text-xs">
-                            {item.sport?.name} • {item.format}
+                            {item.sport?.name} • {
+                                item.format === 'league' ? 'Pontos Corridos' :
+                                    item.format === 'knockout' ? 'Mata-mata' :
+                                        item.format === 'groups' ? 'Grupos' :
+                                            item.format === 'league_playoffs' ? 'Liga + Playoffs' :
+                                                item.format === 'double_elimination' ? 'Dupla Eliminação' : item.format
+                            }
                         </Text>
                     </View>
                     <View className={`px-2 py-1 rounded ${item.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
@@ -168,6 +174,48 @@ export default function AdminChampionshipsScreen() {
                             value={newChampionship.start_date}
                             onChangeText={(text) => setNewChampionship({ ...newChampionship, start_date: text })}
                         />
+
+                        <Text className="text-gray-600 dark:text-gray-400 font-bold mb-2 mt-2">Formato</Text>
+                        <View className="flex-row flex-wrap gap-2 mb-4">
+                            {[
+                                { id: 'league', label: 'Pontos Corridos' },
+                                { id: 'knockout', label: 'Mata-mata' },
+                                { id: 'groups', label: 'Grupos' },
+                                { id: 'league_playoffs', label: 'Liga + Playoffs' },
+                                { id: 'double_elimination', label: 'Dupl. Elim.' }
+                            ].map((f) => (
+                                <TouchableOpacity
+                                    key={f.id}
+                                    onPress={() => setNewChampionship({ ...newChampionship, format: f.id })}
+                                    className={`px-3 py-2 rounded-lg border ${newChampionship.format === f.id ? 'bg-blue-600 border-blue-600' : 'bg-gray-100 dark:bg-gray-700 border-transparent'}`}
+                                >
+                                    <Text className={`text-xs font-bold ${newChampionship.format === f.id ? 'text-white' : 'text-gray-600 dark:text-gray-300'}`}>
+                                        {f.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        <Text className="text-gray-600 dark:text-gray-400 font-bold mb-2 mt-2">Formato</Text>
+                        <View className="flex-row flex-wrap gap-2 mb-4">
+                            {[
+                                { id: 'league', label: 'Pontos Corridos' },
+                                { id: 'knockout', label: 'Mata-mata' },
+                                { id: 'groups', label: 'Grupos' },
+                                { id: 'league_playoffs', label: 'Liga + Playoffs' },
+                                { id: 'double_elimination', label: 'Dupla Eliminação' }
+                            ].map((f) => (
+                                <TouchableOpacity
+                                    key={f.id}
+                                    onPress={() => setNewChampionship({ ...newChampionship, format: f.id })}
+                                    className={`px-3 py-2 rounded-lg border ${newChampionship.format === f.id ? 'bg-blue-600 border-blue-600' : 'bg-gray-100 dark:bg-gray-700 border-transparent'}`}
+                                >
+                                    <Text className={`text-xs font-bold ${newChampionship.format === f.id ? 'text-white' : 'text-gray-600 dark:text-gray-300'}`}>
+                                        {f.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
 
                         <View className="flex-row gap-3 mt-4">
                             <TouchableOpacity

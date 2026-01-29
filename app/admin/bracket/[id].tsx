@@ -16,7 +16,7 @@ import { api } from '../../../src/services/api';
 interface Championship {
     id: number;
     name: string;
-    format: 'league' | 'knockout' | 'groups';
+    format: 'league' | 'knockout' | 'groups' | 'league_playoffs' | 'double_elimination';
 }
 
 interface Team {
@@ -44,7 +44,7 @@ export default function BracketGenerator() {
     const [teams, setTeams] = useState<Team[]>([]);
     const [matches, setMatches] = useState<Match[]>([]);
 
-    const [format, setFormat] = useState<'league' | 'knockout' | 'groups'>('league');
+    const [format, setFormat] = useState<'league' | 'knockout' | 'groups' | 'league_playoffs' | 'double_elimination'>('league');
     const [startDate, setStartDate] = useState('');
     const [intervalDays, setIntervalDays] = useState('7');
 
@@ -187,29 +187,37 @@ export default function BracketGenerator() {
                 </View>
 
                 {/* Format Selector */}
+                {/* Format Selector */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Formato do Chaveamento</Text>
-                    {(['league', 'knockout', 'groups'] as const).map((f) => (
+                    {(['league', 'knockout', 'groups', 'league_playoffs', 'double_elimination'] as const).map((f) => (
                         <TouchableOpacity
                             key={f}
                             style={[styles.formatCard, format === f && styles.formatCardActive]}
                             onPress={() => setFormat(f)}
                         >
                             <Ionicons
-                                name={f === 'league' ? 'list' : f === 'knockout' ? 'git-network' : 'grid'}
+                                name={
+                                    f === 'league' ? 'list' :
+                                        f === 'knockout' ? 'git-network' :
+                                            f === 'groups' ? 'grid' :
+                                                f === 'league_playoffs' ? 'trophy' : 'git-merge'
+                                }
                                 size={24}
                                 color={format === f ? '#3b82f6' : '#6b7280'}
                             />
                             <View style={styles.formatInfo}>
                                 <Text style={[styles.formatName, format === f && styles.formatNameActive]}>
-                                    {f === 'league' ? 'Pontos Corridos' : f === 'knockout' ? 'Mata-Mata' : 'Grupos'}
+                                    {f === 'league' ? 'Pontos Corridos' :
+                                        f === 'knockout' ? 'Mata-Mata' :
+                                            f === 'groups' ? 'Grupos' :
+                                                f === 'league_playoffs' ? 'Liga + Playoffs' : 'Dupla Eliminação'}
                                 </Text>
                                 <Text style={styles.formatDescription}>
-                                    {f === 'league'
-                                        ? 'Todos contra todos'
-                                        : f === 'knockout'
-                                            ? 'Eliminação direta'
-                                            : 'Fase de grupos'}
+                                    {f === 'league' ? 'Todos contra todos' :
+                                        f === 'knockout' ? 'Eliminação direta' :
+                                            f === 'groups' ? 'Fase de grupos' :
+                                                f === 'league_playoffs' ? 'Regular + Finais' : 'Winners/Losers'}
                                 </Text>
                             </View>
                             {format === f && <Ionicons name="checkmark-circle" size={24} color="#10b981" />}

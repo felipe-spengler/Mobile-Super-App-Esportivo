@@ -175,7 +175,7 @@ export default function ChampionshipMenuScreen() {
                         {gridItems.map((item: any, index: number) => (
                             <TouchableOpacity
                                 key={index}
-                                className={`w-[48%] md:w-64 bg-white dark:bg-gray-800 p-4 rounded-xl mb-4 shadow-sm border-l-4 hover:bg-gray-50 transition-all`}
+                                className={`w-[48%] md:w-64 bg-white dark:bg-gray-800 p-4 rounded-xl mb-4 shadow-sm border border-gray-200 dark:border-gray-700 border-l-4 hover:bg-gray-50 transition-all`}
                                 style={{ borderLeftColor: item.iconColor || getTailwindColor(item.color) }}
                                 onPress={() => {
                                     if (item.route) {
