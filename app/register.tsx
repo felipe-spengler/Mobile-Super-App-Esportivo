@@ -22,6 +22,10 @@ export default function RegisterScreen() {
     const [phone, setPhone] = useState('');
     const [cpf, setCpf] = useState('');
     const [birthDate, setBirthDate] = useState('');
+    const [gender, setGender] = useState<'M' | 'F' | ''>('');
+    const [rg, setRg] = useState('');
+    const [motherName, setMotherName] = useState('');
+    const [documentNumber, setDocumentNumber] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Images
@@ -89,6 +93,11 @@ export default function RegisterScreen() {
                 if (data.name) setName(data.name);
                 if (data.cpf) setCpf(data.cpf);
                 if (data.birth_date) setBirthDate(data.birth_date);
+                if (data.gender) setGender(data.gender);
+                if (data.rg) setRg(data.rg);
+                if (data.mother_name) setMotherName(data.mother_name);
+                if (data.document_number) setDocumentNumber(data.document_number);
+
                 Alert.alert('Sucesso', 'Dados extraídos com sucesso! Agora escolha sua foto de perfil.');
             } else {
                 Alert.alert('Atenção', 'Não conseguimos ler todos os dados. Prossiga para a validação manual.');
@@ -105,8 +114,8 @@ export default function RegisterScreen() {
     }
 
     async function handleRegister() {
-        if (!name || !email || !password || !confirmPassword || !cpf || !birthDate) {
-            Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
+        if (!name || !email || !password || !confirmPassword || !cpf || !birthDate || !gender) {
+            Alert.alert('Atenção', 'Preencha todos os campos obrigatórios (incluindo Gênero).');
             return;
         }
 
@@ -126,14 +135,15 @@ export default function RegisterScreen() {
             formData.append('cpf', cpf);
             formData.append('birth_date', birthDate);
 
-            if (docImage) {
-                // @ts-ignore
-                formData.append('document', {
-                    uri: docImage,
-                    name: 'document.jpg',
-                    type: 'image/jpeg'
-                });
-            }
+            formData.append('document', {
+                uri: docImage,
+                name: 'document.jpg',
+                type: 'image/jpeg'
+            } as any);
+            formData.append('gender', gender);
+            if (rg) formData.append('rg', rg);
+            if (motherName) formData.append('mother_name', motherName);
+            if (documentNumber) formData.append('document_number', documentNumber);
 
             if (profileImage) {
                 // @ts-ignore
@@ -271,6 +281,24 @@ export default function RegisterScreen() {
                         onChangeText={setBirthDate}
                         editable={!docImage}
                     />
+                </View>
+
+                <View className="mt-2">
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Gênero (Para Categorias)</Text>
+                    <View className="flex-row gap-4">
+                        <TouchableOpacity
+                            className={`flex-1 p-4 rounded-xl border ${gender === 'M' ? 'bg-blue-600 border-blue-600' : 'bg-gray-200 dark:bg-gray-800 border-gray-200 dark:border-gray-700'}`}
+                            onPress={() => setGender('M')}
+                        >
+                            <Text className={`text-center font-bold ${gender === 'M' ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}>Masculino</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            className={`flex-1 p-4 rounded-xl border ${gender === 'F' ? 'bg-pink-600 border-pink-600' : 'bg-gray-200 dark:bg-gray-800 border-gray-200 dark:border-gray-700'}`}
+                            onPress={() => setGender('F')}
+                        >
+                            <Text className={`text-center font-bold ${gender === 'F' ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}>Feminino</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View className="mt-2">
