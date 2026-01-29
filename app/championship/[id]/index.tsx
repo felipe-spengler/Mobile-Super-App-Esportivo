@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import api from '../../../src/services/api';
+import { api } from '../../../src/services/api';
 import '../../../global.css';
 
 const MENUS: any = {
@@ -125,7 +125,7 @@ export default function ChampionshipMenuScreen() {
     // Select menu based on sport slug
     const sportSlug = champ?.sport?.slug || 'default';
 
-    // Normalização Inteligente de Slug
+    // Normalização Inteligente
     const normalizeSlug = (s: string) => {
         s = s.toLowerCase();
         if (s.includes('fute') || s.includes('fut') || s.includes('society') || s.includes('soccer')) return 'futebol';
@@ -191,7 +191,7 @@ export default function ChampionshipMenuScreen() {
                         {gridItems.map((item: any, index: number) => (
                             <TouchableOpacity
                                 key={index}
-                                className={`w-[48%] md:w-64 bg-white dark:bg-gray-800 p-4 rounded-xl mb-4 shadow-sm border border-gray-200 dark:border-gray-700 border-l-4 hover:bg-gray-50 transition-all`}
+                                className={`w-[48%] md:w-64 bg-white dark:bg-gray-800 p-4 rounded-xl mb-4 shadow-sm border-l-4 hover:bg-gray-50 transition-all`}
                                 style={{ borderLeftColor: item.iconColor || getTailwindColor(item.color) }}
                                 onPress={() => {
                                     if (item.route) {
