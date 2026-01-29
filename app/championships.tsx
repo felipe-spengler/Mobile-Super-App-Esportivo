@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
-import api from '../src/services/api';
+import { api } from '../src/services/api';
 import '../global.css';
 
 export default function ChampionshipsScreen() {
@@ -41,10 +41,10 @@ export default function ChampionshipsScreen() {
         <View className="flex-1 bg-gray-50 dark:bg-gray-900">
             {/* Header */}
             <View className="bg-white dark:bg-gray-800 p-4 pt-12 shadow-sm flex-row items-center">
-                <TouchableOpacity onPress={() => router.back()} className="p-2">
-                    <FontAwesome5 name="arrow-left" size={20} color={isDark ? '#FFF' : '#333'} />
+                <TouchableOpacity onPress={() => router.back()} className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full mr-4">
+                    <FontAwesome5 name="arrow-left" size={20} color={isDark ? '#E5E7EB' : '#374151'} />
                 </TouchableOpacity>
-                <Text className="text-xl font-bold ml-4 text-gray-800 dark:text-white">
+                <Text className="text-xl font-bold text-gray-800 dark:text-white">
                     {sportName || 'Campeonatos'}
                 </Text>
             </View>
