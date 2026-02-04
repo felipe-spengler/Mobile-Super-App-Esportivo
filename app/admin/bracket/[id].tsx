@@ -47,6 +47,7 @@ export default function BracketGenerator() {
     const [format, setFormat] = useState<'league' | 'knockout' | 'groups' | 'league_playoffs' | 'double_elimination'>('league');
     const [startDate, setStartDate] = useState('');
     const [intervalDays, setIntervalDays] = useState('7');
+    const [legs, setLegs] = useState('1'); // New state for legs
 
     useEffect(() => {
         loadData();
@@ -103,9 +104,15 @@ export default function BracketGenerator() {
                                 format,
                                 start_date: startDate,
                                 match_interval_days: parseInt(intervalDays),
+                                legs: parseInt(legs) // Send legs
                             });
 
-                            Alert.alert('Sucesso', `${response.data.matches_created} partidas criadas!`);
+                            // Detailed Alert
+                            Alert.alert('Sucesso',
+                                `Tabela gerada com sucesso!\n\n` +
+                                `Foram criados ${response.data.matches_created} jogos para ${response.data.teams_count} equipes:\n` +
+                                `${response.data.teams_list ? response.data.teams_list.join(', ') : ''}`
+                            );
                             loadData();
                         } catch (error: any) {
                             Alert.alert('Erro', error.response?.data?.message || 'Não foi possível gerar o chaveamento.');
@@ -246,6 +253,17 @@ export default function BracketGenerator() {
                             value={intervalDays}
                             onChangeText={setIntervalDays}
                             placeholder="7"
+                            keyboardType="numeric"
+                        />
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Confrontos por adversário (Turnos)</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={legs}
+                            onChangeText={setLegs}
+                            placeholder="1"
                             keyboardType="numeric"
                         />
                     </View>
