@@ -46,7 +46,7 @@ export default function PlayerFormScreen() {
                     cpf: data.cpf || '',
                     email: data.email || '',
                 });
-                setPhoto(data.photo_url);
+                setPhoto(data.photo_url ? (data.photo_url.startsWith('http') ? data.photo_url : `https://esportivo.techinteligente.site${data.photo_url}`) : null);
             }
         } catch (error) {
             console.error(error);

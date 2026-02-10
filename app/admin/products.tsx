@@ -13,7 +13,7 @@ import {
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import api from '../../services/api';
+import { api } from '../../src/services/api';
 
 interface Product {
     id: number;
@@ -220,7 +220,7 @@ export default function AdminProducts() {
                                 <View className="flex-row">
                                     {product.image_url ? (
                                         <Image
-                                            source={{ uri: product.image_url }}
+                                            source={{ uri: product.image_url.startsWith('http') ? product.image_url : `https://esportivo.techinteligente.site${product.image_url}` }}
                                             className="w-24 h-24"
                                             resizeMode="cover"
                                         />
@@ -294,7 +294,7 @@ export default function AdminProducts() {
                                 >
                                     {imageUri || editingProduct?.image_url ? (
                                         <Image
-                                            source={{ uri: imageUri || editingProduct?.image_url || '' }}
+                                            source={{ uri: imageUri || (editingProduct?.image_url && (editingProduct.image_url.startsWith('http') ? editingProduct.image_url : `https://esportivo.techinteligente.site${editingProduct.image_url}`)) || '' }}
                                             className="w-32 h-32 rounded-lg"
                                             resizeMode="cover"
                                         />

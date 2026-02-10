@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import api from '../src/services/api';
+import { api } from '../src/services/api';
 import '../global.css';
 
 interface Product {
@@ -11,6 +11,7 @@ interface Product {
     description: string;
     price: string;
     type: 'good' | 'service' | 'donation' | 'kit';
+    image_url: string | null;
     variants: any; // JSON
 }
 
@@ -67,8 +68,16 @@ export default function ProductDetailScreen() {
 
             <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
                 {/* Imagem (Placeholder) */}
-                <View className="w-full h-80 bg-gray-100 items-center justify-center mb-6">
-                    <FontAwesome5 name={isDonation ? 'hand-holding-heart' : 'tshirt'} size={100} color={isDonation ? '#ff8888' : '#ddd'} />
+                <View className="w-full h-80 bg-gray-100 items-center justify-center mb-6 overflow-hidden">
+                    {product.image_url ? (
+                        <Image
+                            source={{ uri: product.image_url.startsWith('http') ? product.image_url : `https://esportivo.techinteligente.site${product.image_url}` }}
+                            className="w-full h-full"
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <FontAwesome5 name={isDonation ? 'hand-holding-heart' : 'tshirt'} size={100} color={isDonation ? '#ff8888' : '#ddd'} />
+                    )}
                 </View>
 
                 <View className="px-6">
