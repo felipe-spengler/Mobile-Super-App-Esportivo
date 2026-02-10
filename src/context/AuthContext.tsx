@@ -13,6 +13,8 @@ interface User {
     phone?: string;
     cpf?: string;
     birth_date?: string;
+    photo_url?: string;
+    role?: string;
 }
 
 interface Club {
@@ -27,6 +29,7 @@ interface AuthContextData {
     loading: boolean;
     signIn: (login: string, pass: string) => Promise<void>;
     signOut: () => Promise<void>;
+    updateUser: (data: Partial<User>) => Promise<void>;
     isAuthenticated: boolean;
     selectedClub: Club | null;
     selectClub: (club: Club | null) => void;
@@ -93,6 +96,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Mantém selectedClub para não perder a navegação
     }
 
+    async function updateUser(data: Partial<User>) {
+        if (!user) return;
+        const updatedUser = { ...user, ...data };
+        setUser(updatedUser);
+        await AsyncStorage.setItem('@App:user', JSON.stringify(updatedUser));
+    }
+
     async function selectClub(club: Club | null) {
         setSelectedClub(club);
         if (club) {
@@ -103,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, loading, signIn, signOut, isAuthenticated: !!user, selectedClub, selectClub }}>
+        <AuthContext.Provider value={{ user, loading, signIn, signOut, updateUser, isAuthenticated: !!user, selectedClub, selectClub }}>
             {children}
         </AuthContext.Provider>
     );

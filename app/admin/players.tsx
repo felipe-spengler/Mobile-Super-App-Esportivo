@@ -126,7 +126,7 @@ export default function AdminPlayersScreen() {
                 <View className="flex-row justify-between items-center pt-3 border-t border-gray-100 dark:border-gray-700">
                     <TouchableOpacity
                         className="flex-row items-center bg-blue-50 dark:bg-blue-900 px-3 py-2 rounded"
-                        onPress={() => router.push(`/admin/player-detail/${item.id}`)}
+                        onPress={() => router.push({ pathname: '/admin/player-form', params: { id: item.id } } as any)}
                     >
                         <FontAwesome5 name="edit" size={12} color="#0d6efd" />
                         <Text className="text-blue-600 dark:text-blue-400 text-xs font-bold ml-2">Editar</Text>

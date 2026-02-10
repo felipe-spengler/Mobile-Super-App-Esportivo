@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    ActivityIndicator,
-} from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import api from '../../../src/services/api';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { api } from '../../../src/services/api';
+import '../../../global.css';
 
 interface Match {
     id: number;
@@ -23,23 +17,24 @@ interface Match {
     sport_name: string;
 }
 
-const SPORT_SUMULAS = {
-    1: 'futebol', // Futebol
-    2: 'futsal', // Futsal
-    3: 'volei', // Vôlei
-    4: 'basquete', // Basquete
-    5: 'handebol', // Handebol
-    6: 'futebol-7', // Futebol 7
-    7: 'lutas', // Lutas/MMA
+const SPORT_SUMULAS: Record<number, string> = {
+    1: 'futebol',
+    2: 'futsal',
+    3: 'volei',
+    4: 'basquete',
+    5: 'handebol',
+    6: 'futebol-7',
+    7: 'lutas',
 };
 
 export default function SumulaSelector() {
     const { id } = useLocalSearchParams();
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [match, setMatch] = useState<Match | null>(null);
 
     useEffect(() => {
-        loadMatch();
+        if (id) loadMatch();
     }, [id]);
 
     const loadMatch = async () => {
@@ -60,256 +55,92 @@ export default function SumulaSelector() {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#3b82f6" />
-                <Text style={styles.loadingText}>Carregando...</Text>
+            <View className="flex-1 justify-center items-center bg-gray-50 dark:bg-gray-900">
+                <ActivityIndicator size="large" color="#4F46E5" />
+                <Text className="mt-3 text-gray-500 font-medium">Carregando...</Text>
             </View>
         );
     }
 
     if (!match) {
         return (
-            <View style={styles.errorContainer}>
-                <Ionicons name="alert-circle" size={64} color="#ef4444" />
-                <Text style={styles.errorText}>Partida não encontrada</Text>
+            <View className="flex-1 justify-center items-center bg-gray-50 dark:bg-gray-900">
+                <Ionicons name="alert-circle" size={64} color="#EF4444" />
+                <Text className="mt-4 text-xl font-bold text-gray-800 dark:text-white">Partida não encontrada</Text>
             </View>
         );
     }
 
-    // Detecta súmula automaticamente baseado no esporte
-    const sportKey = SPORT_SUMULAS[match.sport_id as keyof typeof SPORT_SUMULAS] || 'futebol';
+    const sportKey = SPORT_SUMULAS[match.sport_id] || 'futebol';
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-gray-50 dark:bg-gray-900">
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#1f2937" />
+            <View className="pt-12 pb-4 px-4 bg-white dark:bg-gray-800 shadow-sm flex-row items-center border-b border-gray-100 dark:border-gray-700">
+                <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2 rounded-full active:bg-gray-100 dark:active:bg-gray-700">
+                    <Ionicons name="arrow-back" size={24} color="#374151" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Súmula Digital</Text>
-                <View style={{ width: 40 }} />
+                <Text className="text-xl font-bold text-gray-800 dark:text-white ml-2">Súmula Digital</Text>
             </View>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
                 {/* Match Info */}
-                <View style={styles.matchCard}>
-                    <Text style={styles.matchSport}>{match.sport_name}</Text>
-                    <View style={styles.matchTeams}>
-                        <Text style={styles.teamName}>{match.home_team_name}</Text>
-                        <Text style={styles.vs}>vs</Text>
-                        <Text style={styles.teamName}>{match.away_team_name}</Text>
+                <View className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 relative overflow-hidden">
+                    <View className="absolute top-0 right-0 p-2 opacity-5">
+                        <Ionicons name="trophy" size={100} color="#000" />
                     </View>
-                    <Text style={styles.matchDate}>
+                    <Text className="text-indigo-600 dark:text-indigo-400 font-bold uppercase text-xs tracking-wider mb-2">{match.sport_name}</Text>
+                    <View className="flex-row items-center justify-between mb-3">
+                        <Text className="text-lg font-bold text-gray-800 dark:text-white flex-1 text-center">{match.home_team_name}</Text>
+                        <Text className="text-gray-400 font-bold text-sm mx-4">VS</Text>
+                        <Text className="text-lg font-bold text-gray-800 dark:text-white flex-1 text-center">{match.away_team_name}</Text>
+                    </View>
+                    <Text className="text-center text-gray-500 text-xs">
                         {new Date(match.match_date).toLocaleString('pt-BR')}
                     </Text>
                 </View>
 
                 {/* Auto-detect Button */}
                 <TouchableOpacity
-                    style={styles.autoButton}
+                    className="flex-row items-center p-5 bg-indigo-600 rounded-xl mb-8 shadow-lg shadow-indigo-200 dark:shadow-none active:scale-[0.98] transition-transform"
                     onPress={() => handleSelectSumula(sportKey)}
                 >
-                    <Ionicons name="flash" size={24} color="#fff" />
-                    <View style={styles.autoButtonContent}>
-                        <Text style={styles.autoButtonTitle}>Abrir Súmula Automática</Text>
-                        <Text style={styles.autoButtonSubtitle}>
+                    <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center mr-4">
+                        <Ionicons name="flash" size={24} color="#fff" />
+                    </View>
+                    <View className="flex-1">
+                        <Text className="text-white font-bold text-lg">Abrir Súmula Automática</Text>
+                        <Text className="text-indigo-200 text-sm">
                             Detectado: {match.sport_name}
                         </Text>
                     </View>
+                    <Ionicons name="chevron-forward" size={24} color="#fff" />
                 </TouchableOpacity>
 
                 {/* Manual Selection */}
-                <Text style={styles.sectionTitle}>Ou escolha manualmente:</Text>
+                <Text className="text-gray-800 dark:text-white font-bold text-lg mb-4">Ou escolha manualmente:</Text>
 
-                <View style={styles.sumulaGrid}>
-                    <TouchableOpacity
-                        style={styles.sumulaCard}
-                        onPress={() => handleSelectSumula('futebol')}
-                    >
-                        <Ionicons name="football" size={32} color="#10b981" />
-                        <Text style={styles.sumulaCardTitle}>Futebol</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.sumulaCard}
-                        onPress={() => handleSelectSumula('futsal')}
-                    >
-                        <Ionicons name="football" size={32} color="#3b82f6" />
-                        <Text style={styles.sumulaCardTitle}>Futsal</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.sumulaCard}
-                        onPress={() => handleSelectSumula('volei')}
-                    >
-                        <Ionicons name="basketball" size={32} color="#f59e0b" />
-                        <Text style={styles.sumulaCardTitle}>Vôlei</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.sumulaCard}
-                        onPress={() => handleSelectSumula('basquete')}
-                    >
-                        <Ionicons name="basketball" size={32} color="#ef4444" />
-                        <Text style={styles.sumulaCardTitle}>Basquete</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.sumulaCard}
-                        onPress={() => handleSelectSumula('handebol')}
-                    >
-                        <Ionicons name="hand-left" size={32} color="#8b5cf6" />
-                        <Text style={styles.sumulaCardTitle}>Handebol</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.sumulaCard}
-                        onPress={() => handleSelectSumula('futebol-7')}
-                    >
-                        <Ionicons name="football" size={32} color="#14b8a6" />
-                        <Text style={styles.sumulaCardTitle}>Futebol 7</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.sumulaCard}
-                        onPress={() => handleSelectSumula('lutas')}
-                    >
-                        <Ionicons name="fitness" size={32} color="#ec4899" />
-                        <Text style={styles.sumulaCardTitle}>Lutas/MMA</Text>
-                    </TouchableOpacity>
+                <View className="flex-row flex-wrap justify-between gap-y-4">
+                    {[
+                        { key: 'futebol', label: 'Futebol', icon: 'football', color: '#10B981' },
+                        { key: 'futsal', label: 'Futsal', icon: 'football', color: '#3B82F6' },
+                        { key: 'volei', label: 'Vôlei', icon: 'basketball', color: '#F59E0B' },
+                        { key: 'basquete', label: 'Basquete', icon: 'basketball', color: '#EF4444' },
+                        { key: 'handebol', label: 'Handebol', icon: 'hand-left', color: '#8B5CF6', iconSet: 'Ionicons' },
+                        { key: 'futebol-7', label: 'Futebol 7', icon: 'football', color: '#14B8A6' },
+                        { key: 'lutas', label: 'Lutas/MMA', icon: 'fitness', color: '#EC4899' },
+                    ].map((item: any) => (
+                        <TouchableOpacity
+                            key={item.key}
+                            className="w-[48%] p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl items-center shadow-sm active:bg-gray-50 dark:active:bg-gray-700"
+                            onPress={() => handleSelectSumula(item.key)}
+                        >
+                            <Ionicons name={item.icon} size={32} color={item.color} />
+                            <Text className="mt-2 font-bold text-gray-700 dark:text-gray-300 text-sm">{item.label}</Text>
+                        </TouchableOpacity>
+                    ))}
                 </View>
             </ScrollView>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 16,
-        color: '#6b7280',
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    errorText: {
-        marginTop: 16,
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#1f2937',
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e5e7eb',
-    },
-    backButton: {
-        padding: 8,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: '#1f2937',
-    },
-    content: {
-        flex: 1,
-        padding: 16,
-    },
-    matchCard: {
-        padding: 20,
-        backgroundColor: '#eff6ff',
-        borderRadius: 12,
-        marginBottom: 24,
-    },
-    matchSport: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#3b82f6',
-        marginBottom: 8,
-    },
-    matchTeams: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    teamName: {
-        flex: 1,
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#1f2937',
-    },
-    vs: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#9ca3af',
-        marginHorizontal: 12,
-    },
-    matchDate: {
-        fontSize: 12,
-        color: '#6b7280',
-    },
-    autoButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: '#3b82f6',
-        borderRadius: 12,
-        marginBottom: 24,
-        gap: 16,
-    },
-    autoButtonContent: {
-        flex: 1,
-    },
-    autoButtonTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: '#fff',
-        marginBottom: 4,
-    },
-    autoButtonSubtitle: {
-        fontSize: 14,
-        color: '#dbeafe',
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#1f2937',
-        marginBottom: 16,
-    },
-    sumulaGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-    },
-    sumulaCard: {
-        width: '48%',
-        padding: 20,
-        backgroundColor: '#f9fafb',
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        borderRadius: 12,
-        alignItems: 'center',
-    },
-    sumulaCardTitle: {
-        marginTop: 8,
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#1f2937',
-    },
-});

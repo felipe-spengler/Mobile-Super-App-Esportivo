@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
@@ -22,7 +22,7 @@ export default function ClubConfigScreen() {
     async function loadClub() {
         try {
             setLoading(true);
-            const response = await api.get('/club'); // Assumindo rota que retorna clube do usuário logado
+            const response = await api.get('/club');
             const data = response.data;
             setClub(data);
             setForm({
@@ -52,43 +52,52 @@ export default function ClubConfigScreen() {
 
     return (
         <View className="flex-1 bg-gray-50 dark:bg-gray-900">
-            <View className="bg-white dark:bg-gray-800 p-4 pt-12 border-b border-gray-200 dark:border-gray-700 flex-row items-center justify-between shadow-sm">
+            <View className="bg-white dark:bg-gray-800 p-4 pt-12 border-b border-gray-100 dark:border-gray-700 flex-row items-center justify-between shadow-sm">
                 <View className="flex-row items-center">
-                    <TouchableOpacity onPress={() => router.back()} className="p-2 mr-2">
-                        <MaterialIcons name="arrow-back" size={24} color="#333" />
+                    <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2">
+                        <MaterialIcons name="arrow-back" size={24} color="#374151" />
                     </TouchableOpacity>
-                    <Text className="text-xl font-bold text-gray-800 dark:text-white">Configurar Clube</Text>
+                    <Text className="text-xl font-bold text-gray-800 dark:text-white ml-2">Configurar Clube</Text>
                 </View>
             </View>
 
             {loading ? (
-                <ActivityIndicator size="large" color="#0d6efd" className="mt-10" />
+                <View className="flex-1 justify-center items-center">
+                    <ActivityIndicator size="large" color="#4F46E5" />
+                </View>
             ) : (
-                <View className="p-4">
-                    <View className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-                        <Text className="label">Nome do Clube</Text>
+                <ScrollView className="p-4">
+                    <View className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                        <Text className="text-xs text-gray-500 mb-1 font-bold uppercase">Nome do Clube</Text>
                         <TextInput
-                            className="input"
+                            className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl mb-6 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600"
                             value={form.name}
                             onChangeText={t => setForm({ ...form, name: t })}
+                            placeholder="Ex: Esporte Clube"
                         />
 
-                        <Text className="label">Cor Primária (Hex)</Text>
-                        <View className="flex-row items-center gap-2">
-                            <View style={{ backgroundColor: form.primary_color, width: 24, height: 24, borderRadius: 12, borderWidth: 1, borderColor: '#ccc' }} />
+                        <Text className="text-xs text-gray-500 mb-1 font-bold uppercase">Cor Primária (Hex)</Text>
+                        <View className="flex-row items-center gap-3 mb-6">
+                            <View
+                                style={{ backgroundColor: form.primary_color }}
+                                className="w-12 h-12 rounded-xl border border-gray-200 shadow-sm"
+                            />
                             <TextInput
-                                className="input flex-1"
+                                className="flex-1 bg-gray-50 dark:bg-gray-700 p-4 rounded-xl text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600"
                                 value={form.primary_color}
                                 onChangeText={t => setForm({ ...form, primary_color: t })}
                                 placeholder="#000000"
                             />
                         </View>
 
-                        <Text className="label">Cor Secundária (Hex)</Text>
-                        <View className="flex-row items-center gap-2">
-                            <View style={{ backgroundColor: form.secondary_color, width: 24, height: 24, borderRadius: 12, borderWidth: 1, borderColor: '#ccc' }} />
+                        <Text className="text-xs text-gray-500 mb-1 font-bold uppercase">Cor Secundária (Hex)</Text>
+                        <View className="flex-row items-center gap-3 mb-8">
+                            <View
+                                style={{ backgroundColor: form.secondary_color }}
+                                className="w-12 h-12 rounded-xl border border-gray-200 shadow-sm"
+                            />
                             <TextInput
-                                className="input flex-1"
+                                className="flex-1 bg-gray-50 dark:bg-gray-700 p-4 rounded-xl text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600"
                                 value={form.secondary_color}
                                 onChangeText={t => setForm({ ...form, secondary_color: t })}
                                 placeholder="#ffffff"
@@ -96,13 +105,13 @@ export default function ClubConfigScreen() {
                         </View>
 
                         <TouchableOpacity
-                            className="bg-blue-600 p-4 rounded-xl mt-6 items-center"
+                            className="bg-indigo-600 p-4 rounded-xl items-center shadow-lg shadow-indigo-200"
                             onPress={handleSave}
                         >
                             <Text className="text-white font-bold text-lg">Salvar Alterações</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </ScrollView>
             )}
         </View>
     );

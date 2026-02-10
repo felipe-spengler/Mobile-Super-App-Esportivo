@@ -145,7 +145,7 @@ export default function ChampionshipMenuScreen() {
     return (
         <View className="flex-1 bg-gray-50 dark:bg-gray-900">
             {/* Header */}
-            <View className="bg-blue-900 pt-12 pb-4 px-4 relative shadow-lg z-10">
+            <View className="bg-indigo-900 pt-12 pb-4 px-4 relative shadow-lg z-10">
                 <TouchableOpacity onPress={() => router.back()} className="absolute top-12 left-4 z-10 w-10 h-10 items-center justify-center bg-black/20 rounded-full">
                     <FontAwesome5 name="arrow-left" size={18} color="white" />
                 </TouchableOpacity>

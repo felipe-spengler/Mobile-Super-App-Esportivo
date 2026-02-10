@@ -135,11 +135,12 @@ export default function RegisterScreen() {
             formData.append('cpf', cpf);
             formData.append('birth_date', birthDate);
 
+            // @ts-ignore
             formData.append('document', {
                 uri: docImage,
                 name: 'document.jpg',
                 type: 'image/jpeg'
-            } as any);
+            });
             formData.append('gender', gender);
             if (rg) formData.append('rg', rg);
             if (motherName) formData.append('mother_name', motherName);
@@ -173,7 +174,7 @@ export default function RegisterScreen() {
     if (step === 'scan') {
         return (
             <View className="flex-1 bg-gray-50 dark:bg-gray-900 px-6 justify-center items-center">
-                <FontAwesome5 name="id-card" size={60} color="#3B82F6" className="mb-6" />
+                <FontAwesome5 name="id-card" size={60} color="#4F46E5" className="mb-6" />
                 <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">Passo 1: Validação</Text>
                 <Text className="text-gray-500 dark:text-gray-400 text-center mb-8">
                     Para garantir a segurança e categorias corretas nos campeonatos, precisamos escanear seu RG ou CNH.
@@ -181,12 +182,12 @@ export default function RegisterScreen() {
 
                 {loadingOCR ? (
                     <View className="items-center">
-                        <ActivityIndicator size="large" color="#3B82F6" />
+                        <ActivityIndicator size="large" color="#4F46E5" />
                         <Text className="text-gray-600 dark:text-gray-300 mt-4">Analisando documento com IA...</Text>
                     </View>
                 ) : (
                     <View className="w-full gap-4">
-                        <TouchableOpacity className="bg-blue-600 p-4 rounded-xl flex-row justify-center items-center" onPress={() => takePhoto('doc')}>
+                        <TouchableOpacity className="bg-indigo-600 p-4 rounded-xl flex-row justify-center items-center" onPress={() => takePhoto('doc')}>
                             <FontAwesome5 name="camera" size={20} color="white" className="mr-3" />
                             <Text className="text-white font-bold text-lg">Tirar Foto do Documento</Text>
                         </TouchableOpacity>
@@ -222,7 +223,7 @@ export default function RegisterScreen() {
                 </Text>
 
                 <View className="w-full gap-4">
-                    <TouchableOpacity className="bg-blue-600 p-4 rounded-xl flex-row justify-center items-center" onPress={() => takePhoto('profile')}>
+                    <TouchableOpacity className="bg-indigo-600 p-4 rounded-xl flex-row justify-center items-center" onPress={() => takePhoto('profile')}>
                         <FontAwesome5 name="camera" size={20} color="white" className="mr-3" />
                         <Text className="text-white font-bold text-lg">Tirar Selfie</Text>
                     </TouchableOpacity>
@@ -232,10 +233,10 @@ export default function RegisterScreen() {
                         <Text className="text-gray-800 dark:text-white font-bold text-lg">Escolher da Galeria</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity className={`mt-4 p-4 rounded-xl border border-blue-600 ${!profileImage ? 'opacity-50' : 'bg-blue-50'}`}
+                    <TouchableOpacity className={`mt-4 p-4 rounded-xl border border-indigo-600 ${!profileImage ? 'opacity-50' : 'bg-indigo-50'}`}
                         onPress={() => setStep('form')}
                     >
-                        <Text className="text-blue-600 font-bold text-center text-lg">{profileImage ? 'Continuar' : 'Pular foto por enquanto'}</Text>
+                        <Text className="text-indigo-600 font-bold text-center text-lg">{profileImage ? 'Continuar' : 'Pular foto por enquanto'}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -287,7 +288,7 @@ export default function RegisterScreen() {
                     <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Gênero (Para Categorias)</Text>
                     <View className="flex-row gap-4">
                         <TouchableOpacity
-                            className={`flex-1 p-4 rounded-xl border ${gender === 'M' ? 'bg-blue-600 border-blue-600' : 'bg-gray-200 dark:bg-gray-800 border-gray-200 dark:border-gray-700'}`}
+                            className={`flex-1 p-4 rounded-xl border ${gender === 'M' ? 'bg-indigo-600 border-indigo-600' : 'bg-gray-200 dark:bg-gray-800 border-gray-200 dark:border-gray-700'}`}
                             onPress={() => setGender('M')}
                         >
                             <Text className={`text-center font-bold ${gender === 'M' ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}>Masculino</Text>
@@ -304,7 +305,7 @@ export default function RegisterScreen() {
                 <View className="mt-2">
                     <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">E-mail</Text>
                     <TextInput
-                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500"
                         placeholder="seu@email.com"
                         placeholderTextColor="#9CA3AF"
                         keyboardType="email-address"
@@ -317,7 +318,7 @@ export default function RegisterScreen() {
                 <View className="mt-2">
                     <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Telefone / WhatsApp</Text>
                     <TextInput
-                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500"
                         placeholder="(00) 00000-0000"
                         placeholderTextColor="#9CA3AF"
                         keyboardType="phone-pad"
@@ -329,7 +330,7 @@ export default function RegisterScreen() {
                 <View className="mt-2">
                     <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Senha</Text>
                     <TextInput
-                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500"
                         placeholder="Mínimo 6 caracteres"
                         placeholderTextColor="#9CA3AF"
                         secureTextEntry
@@ -341,7 +342,7 @@ export default function RegisterScreen() {
                 <View className="mt-2">
                     <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Confirmar Senha</Text>
                     <TextInput
-                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-blue-500"
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500"
                         placeholder="Repita a senha"
                         placeholderTextColor="#9CA3AF"
                         secureTextEntry
@@ -351,7 +352,7 @@ export default function RegisterScreen() {
                 </View>
 
                 <TouchableOpacity
-                    className={`bg-blue-600 p-4 rounded-xl items-center mt-6 ${isSubmitting ? 'opacity-50' : ''}`}
+                    className={`bg-green-600 p-4 rounded-xl items-center mt-6 ${isSubmitting ? 'opacity-50' : ''}`}
                     onPress={handleRegister}
                     disabled={isSubmitting}
                 >
@@ -363,7 +364,7 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity className="mt-4 items-center mb-6" onPress={() => router.back()}>
-                    <Text className="text-gray-600 dark:text-gray-400">Já tem uma conta? <Text className="text-blue-600 dark:text-blue-400 font-bold">Faça Login</Text></Text>
+                    <Text className="text-gray-600 dark:text-gray-400">Já tem uma conta? <Text className="text-indigo-600 dark:text-indigo-400 font-bold">Faça Login</Text></Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>

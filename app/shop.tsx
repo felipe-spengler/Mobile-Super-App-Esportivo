@@ -1,74 +1,62 @@
-import { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { api } from '../src/services/api';
-import '../global.css';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { useAuth } from '../src/context/AuthContext';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import '../../global.css';
 
 export default function ShopScreen() {
     const router = useRouter();
-    const { selectedClub } = useAuth();
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        async function loadProducts() {
-            if (!selectedClub) return;
-
-            try {
-                const response = await api.get(`/clubs/${selectedClub.id}/products`);
-                setProducts(response.data);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        loadProducts();
-    }, [selectedClub]);
+    const products = [
+        { id: 1, name: 'Camisa Oficial 2026', price: 'R$ 149,90', image: 'bg-indigo-100', color: '#E0E7FF' },
+        { id: 2, name: 'Boné Clube', price: 'R$ 59,90', image: 'bg-gray-100', color: '#F3F4F6' },
+        { id: 3, name: 'Squeeze Térmica', price: 'R$ 49,90', image: 'bg-blue-100', color: '#DBEAFE' },
+        { id: 4, name: 'Toalha Esportiva', price: 'R$ 39,90', image: 'bg-green-100', color: '#DCFCE7' },
+    ];
 
     return (
-        <View className="flex-1 bg-gray-50">
-            <View className="bg-white p-4 pt-12 shadow-sm flex-row items-center justify-between">
-                <Text className="text-xl font-bold text-gray-800">Loja Oficial</Text>
-                <TouchableOpacity onPress={() => router.push('/cart')}>
-                    <FontAwesome5 name="shopping-cart" size={20} color="#333" />
-                    <View className="absolute -top-2 -right-2 bg-red-500 w-5 h-5 rounded-full items-center justify-center">
-                        <Text className="text-white text-[10px] font-bold">0</Text>
-                    </View>
+        <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+            {/* Header */}
+            <View className="flex-row items-center justify-between p-4 pt-12 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+                <TouchableOpacity onPress={() => router.back()} className="p-2 rounded-full active:bg-gray-100 dark:active:bg-gray-700">
+                    <MaterialIcons name="arrow-back" size={24} color="#4B5563" />
+                </TouchableOpacity>
+                <Text className="text-xl font-bold text-gray-800 dark:text-white">Loja Oficial</Text>
+                <TouchableOpacity className="p-2 rounded-full active:bg-gray-100 dark:active:bg-gray-700">
+                    <FontAwesome5 name="shopping-bag" size={20} color="#4B5563" />
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                data={products}
-                keyExtractor={(item: any) => item.id.toString()}
-                numColumns={2}
-                contentContainerStyle={{ padding: 8 }}
-                ListEmptyComponent={
-                    <Text className="text-center text-gray-500 mt-10">Ainda não há produtos cadastrados.</Text>
-                }
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        className="flex-1 bg-white m-2 p-3 rounded-xl shadow-sm items-center"
-                        onPress={() => router.push({ pathname: '/product-detail', params: { productId: item.id } })}
-                    >
-                        <View className="w-24 h-24 bg-gray-100 rounded-lg mb-2 items-center justify-center">
-                            <FontAwesome5 name="tshirt" size={40} color="#ccc" />
-                        </View>
+            <ScrollView className="p-4" contentContainerStyle={{ paddingBottom: 24 }}>
+                <View className="flex-row flex-wrap justify-between">
+                    {products.map(product => (
+                        <TouchableOpacity
+                            key={product.id}
+                            className="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 w-[48%] mb-4 active:scale-[0.98] transition-transform"
+                        >
+                            <View
+                                className="aspect-square rounded-xl mb-3 flex items-center justify-center relative"
+                                style={{ backgroundColor: product.color }}
+                            >
+                                <FontAwesome5 name="tshirt" size={32} color="rgba(0,0,0,0.1)" />
+                                <TouchableOpacity className="absolute top-2 right-2 p-1.5 bg-white/80 rounded-full">
+                                    <MaterialIcons name="favorite-border" size={16} color="#9CA3AF" />
+                                </TouchableOpacity>
+                            </View>
 
-                        <Text className="font-bold text-gray-800 text-center mb-1" numberOfLines={2}>{item.name}</Text>
+                            <Text className="font-bold text-gray-800 dark:text-white text-sm mb-1" numberOfLines={1}>
+                                {product.name}
+                            </Text>
+                            <Text className="text-indigo-600 dark:text-indigo-400 font-bold mb-3">
+                                {product.price}
+                            </Text>
 
-                        <Text className="text-green-600 font-bold text-lg">
-                            R$ {Number(item.price).toFixed(2).replace('.', ',')}
-                        </Text>
-
-                        <TouchableOpacity className="bg-green-100 w-full py-2 rounded-lg mt-2 items-center">
-                            <Text className="text-green-700 font-bold text-xs uppercase">Comprar</Text>
+                            <TouchableOpacity className="bg-gray-900 dark:bg-indigo-600 w-full py-2 rounded-lg items-center">
+                                <Text className="text-white text-xs font-bold">Adicionar</Text>
+                            </TouchableOpacity>
                         </TouchableOpacity>
-                    </TouchableOpacity>
-                )}
-            />
+                    ))}
+                </View>
+            </ScrollView>
         </View>
     );
 }

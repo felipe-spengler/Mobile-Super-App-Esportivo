@@ -58,7 +58,7 @@ export default function LoginScreen() {
 
             {/* Header / Logo */}
             <View className="items-center mb-10">
-                <View className="w-20 h-20 bg-green-500 rounded-full items-center justify-center mb-4 shadow-lg shadow-green-500/30">
+                <View className="w-20 h-20 bg-indigo-600 rounded-full items-center justify-center mb-4 shadow-lg shadow-indigo-600/30">
                     <FontAwesome name="soccer-ball-o" size={40} color="white" />
                 </View>
                 <Text className="text-gray-900 dark:text-white text-3xl font-bold">App Esportivo</Text>
@@ -70,7 +70,7 @@ export default function LoginScreen() {
                 <View>
                     <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">E-mail ou Telefone</Text>
                     <TextInput
-                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-500"
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 dark:focus:border-indigo-500"
                         placeholder="E-mail ou Telefone"
                         placeholderTextColor="#9CA3AF"
                         keyboardType="email-address"
@@ -81,9 +81,14 @@ export default function LoginScreen() {
                 </View>
 
                 <View className="mt-4">
-                    <Text className="text-gray-700 dark:text-gray-300 mb-2 ml-1 font-medium">Senha</Text>
+                    <View className="flex-row justify-between items-center mb-2 ml-1">
+                        <Text className="text-gray-700 dark:text-gray-300 font-medium">Senha</Text>
+                        <TouchableOpacity onPress={() => router.push('/forgot-password')}>
+                            <Text className="text-indigo-600 dark:text-indigo-400 text-xs font-bold">Esqueceu?</Text>
+                        </TouchableOpacity>
+                    </View>
                     <TextInput
-                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-green-500 dark:focus:border-green-500"
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-indigo-500 dark:focus:border-indigo-500"
                         placeholder="********"
                         placeholderTextColor="#9CA3AF"
                         secureTextEntry
@@ -102,7 +107,7 @@ export default function LoginScreen() {
                 ) : null}
 
                 <TouchableOpacity
-                    className={`bg-green-600 dark:bg-green-500 p-4 rounded-xl items-center mt-6 shadow-md shadow-green-500/20 ${isSubmitting ? 'opacity-50' : ''}`}
+                    className={`bg-indigo-600 dark:bg-indigo-500 p-4 rounded-xl items-center mt-6 shadow-md shadow-indigo-500/20 ${isSubmitting ? 'opacity-50' : ''}`}
                     onPress={handleLogin}
                     disabled={isSubmitting}
                 >
@@ -114,7 +119,7 @@ export default function LoginScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity className="mt-4 items-center" onPress={() => router.push('/register')}>
-                    <Text className="text-gray-600 dark:text-gray-400">Não tem conta? <Text className="text-green-600 dark:text-green-400 font-bold">Cadastre-se</Text></Text>
+                    <Text className="text-gray-600 dark:text-gray-400">Não tem conta? <Text className="text-indigo-600 dark:text-indigo-400 font-bold">Cadastre-se</Text></Text>
                 </TouchableOpacity>
             </View>
 

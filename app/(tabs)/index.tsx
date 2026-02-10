@@ -96,15 +96,24 @@ export default function SportsHubScreen() {
       <FlatList
         data={cities}
         keyExtractor={(item) => item.id.toString()}
+        ListFooterComponent={() => (
+          <View className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 items-center pb-8">
+            <Text className="text-sm text-gray-400 mb-4">Ou explore eventos públicos</Text>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/explore')} className="flex-row items-center gap-2">
+              <Text className="text-indigo-600 dark:text-indigo-400 font-bold text-lg">Ver todos os eventos</Text>
+              <MaterialIcons name="keyboard-arrow-down" size={20} color="#4F46E5" style={{ transform: [{ rotate: '-90deg' }] }} />
+            </TouchableOpacity>
+          </View>
+        )}
         renderItem={({ item }) => (
           <View className="mb-4">
             <TouchableOpacity
-              className={`p-4 rounded-xl flex-row items-center justify-between border ${selectedCityId === item.id ? 'bg-blue-50 border-blue-500 dark:bg-blue-900/30' : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700'}`}
+              className={`p-4 rounded-xl flex-row items-center justify-between border ${selectedCityId === item.id ? 'bg-indigo-50 border-indigo-500 dark:bg-indigo-900/30' : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700'}`}
               onPress={() => handleCityPress(item)}
             >
               <View className="flex-row items-center">
-                <View className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full items-center justify-center mr-3">
-                  <MaterialIcons name="location-city" size={24} color="#555" />
+                <View className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${selectedCityId === item.id ? 'bg-indigo-100' : 'bg-gray-200 dark:bg-gray-700'}`}>
+                  <MaterialIcons name="location-city" size={24} color={selectedCityId === item.id ? '#4F46E5' : '#555'} />
                 </View>
                 <View>
                   <Text className="font-bold text-gray-800 dark:text-gray-100 text-lg">{item.name}</Text>
@@ -114,23 +123,23 @@ export default function SportsHubScreen() {
               <MaterialIcons
                 name={selectedCityId === item.id ? "keyboard-arrow-up" : "keyboard-arrow-down"}
                 size={24}
-                color="#888"
+                color={selectedCityId === item.id ? '#4F46E5' : '#888'}
               />
             </TouchableOpacity>
 
             {selectedCityId === item.id && (
-              <View className="mt-2 ml-4 pl-4 border-l-2 border-gray-300 dark:border-gray-700">
+              <View className="mt-2 ml-4 pl-4 border-l-2 border-indigo-100 dark:border-gray-700">
                 {loadingClubs ? (
-                  <ActivityIndicator size="small" color="#555" className="py-2" />
+                  <ActivityIndicator size="small" color="#4F46E5" className="py-2" />
                 ) : (
                   clubs.map((club) => (
                     <TouchableOpacity
                       key={club.id}
-                      className="bg-white dark:bg-gray-800 p-3 rounded-lg mb-2 shadow-sm flex-row items-center"
+                      className="bg-white dark:bg-gray-800 p-3 rounded-lg mb-2 shadow-sm flex-row items-center border border-gray-100 dark:border-gray-700"
                       onPress={() => handleClubPress(club)}
                     >
-                      <View className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full mr-3 items-center justify-center">
-                        <FontAwesome5 name="shield-alt" size={14} color="#0044cc" />
+                      <View className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-full mr-3 items-center justify-center">
+                        <FontAwesome5 name="shield-alt" size={14} color="#4F46E5" />
                       </View>
                       <Text className="text-gray-700 dark:text-gray-200 font-medium">{club.name}</Text>
                     </TouchableOpacity>
